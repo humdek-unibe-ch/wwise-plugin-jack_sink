@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jack", "WwisePlugin\Jack_Authoring_Windows_vc150.vcxproj", "{E0929D23-1443-2D05-3903-D2B001A86DCF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7518292B-4BAB-9350-1A54-3D5120860E33} = {7518292B-4BAB-9350-1A54-3D5120860E33}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JackSink", "SoundEnginePlugin\Jack_Windows_vc150_static.vcxproj", "{7518292B-4BAB-9350-1A54-3D5120860E33}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E0929D23-1443-2D05-3903-D2B001A86DCF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E0929D23-1443-2D05-3903-D2B001A86DCF}.Debug|Win32.Build.0 = Debug|Win32
+		{E0929D23-1443-2D05-3903-D2B001A86DCF}.Debug|x64.ActiveCfg = Debug|x64
+		{E0929D23-1443-2D05-3903-D2B001A86DCF}.Debug|x64.Build.0 = Debug|x64
+		{E0929D23-1443-2D05-3903-D2B001A86DCF}.Release|Win32.ActiveCfg = Release|Win32
+		{E0929D23-1443-2D05-3903-D2B001A86DCF}.Release|Win32.Build.0 = Release|Win32
+		{E0929D23-1443-2D05-3903-D2B001A86DCF}.Release|x64.ActiveCfg = Release|x64
+		{E0929D23-1443-2D05-3903-D2B001A86DCF}.Release|x64.Build.0 = Release|x64
+		{7518292B-4BAB-9350-1A54-3D5120860E33}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7518292B-4BAB-9350-1A54-3D5120860E33}.Debug|Win32.Build.0 = Debug|Win32
+		{7518292B-4BAB-9350-1A54-3D5120860E33}.Debug|x64.ActiveCfg = Debug|x64
+		{7518292B-4BAB-9350-1A54-3D5120860E33}.Debug|x64.Build.0 = Debug|x64
+		{7518292B-4BAB-9350-1A54-3D5120860E33}.Release|Win32.ActiveCfg = Profile|Win32
+		{7518292B-4BAB-9350-1A54-3D5120860E33}.Release|Win32.Build.0 = Profile|Win32
+		{7518292B-4BAB-9350-1A54-3D5120860E33}.Release|x64.ActiveCfg = Profile|x64
+		{7518292B-4BAB-9350-1A54-3D5120860E33}.Release|x64.Build.0 = Profile|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {64DFEFC1-9F2B-4BE7-9CFE-24669F833632}
+	EndGlobalSection
+EndGlobal

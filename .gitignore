@@ -196,7 +196,7 @@ artifacts/
 StyleCopReport.xml
 
 # Visual Studio project files
-*.sln
+#*.sln
 *.vcxproj
 *.vcxproj.filters
 
