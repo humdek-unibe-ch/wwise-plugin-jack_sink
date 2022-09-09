@@ -55,6 +55,24 @@ JackSink::~JackSink()
 {
 }
 
+int JackSink::ProcessCallback(jack_nframes_t nframes, void* arg)
+{
+    JackSink* obj = (JackSink*)arg;
+    jack_default_audio_sample_t* out1, * out2;
+    jack_nframes_t i;
+
+    out1 = (jack_default_audio_sample_t*)jack_port_get_buffer(obj->ports[0], nframes);
+    out2 = (jack_default_audio_sample_t*)jack_port_get_buffer(obj->ports[0], nframes);
+
+    for (i = 0; i < nframes; i++)
+    {
+        out1[i] = 0;
+        out2[i] = 0;
+    }
+
+    return 0;
+}
+
 AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginContext* in_pCtx, AK::IAkPluginParam* in_pParams, AkAudioFormat& io_rFormat)
 {
     jack_status_t status;
@@ -62,10 +80,17 @@ AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginC
     m_pAllocator = in_pAllocator;
     m_pContext = in_pCtx;
 
-    this->client = jack_client_open("wwise", JackNullOption, &status);
+    this->client = jack_client_open("Wwise", JackNullOption, &status);
     if (client == nullptr) {
         return AK_Fail;
     }
+
+    this->ports[0] = jack_port_register(this->client, "p0", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+    this->ports[1] = jack_port_register(this->client, "p1", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+
+    jack_set_process_callback(this->client, JackSink::ProcessCallback, this);
+
+    jack_activate(this->client);
 
     return AK_Success;
 }
@@ -74,6 +99,11 @@ AKRESULT JackSink::Term(AK::IAkPluginMemAlloc* in_pAllocator)
 {
     int rc;
     AK_PLUGIN_DELETE(in_pAllocator, this);
+
+    jack_deactivate(this->client);
+
+    jack_port_unregister(this->client, this->ports[0]);
+    jack_port_unregister(this->client, this->ports[1]);
 
     rc = jack_client_close(this->client);
     if (rc < 0) {

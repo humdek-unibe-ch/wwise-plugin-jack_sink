@@ -75,12 +75,14 @@ public:
     void ResetStarved() override;
 
 private:
+    static int ProcessCallback(jack_nframes_t nframes, void* arg);
     JackSinkParams* m_pParams;
     AK::IAkPluginMemAlloc* m_pAllocator;
     AK::IAkSinkPluginContext* m_pContext;
     bool m_bStarved;
     bool m_bDataReady;
-    jack_client_t* client;
+    jack_client_t* client = NULL;
+    jack_port_t* ports[2] = { NULL, NULL };
 };
 
 #endif // JackSink_H
