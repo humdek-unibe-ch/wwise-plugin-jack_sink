@@ -27,8 +27,11 @@ the specific language governing permissions and limitations under the License.
 #ifndef JackSink_H
 #define JackSink_H
 
+#define JACK_SINK_MAX_PORT_COUNT 36
+
 #include "JackSinkParams.h"
 #include "jack/types.h"
+#include "jack/ringbuffer.h"
 
 /// See https://www.audiokinetic.com/library/edge/?source=SDK&id=soundengine__plugins__audiodevices.html
 /// for the documentation about sink plug-ins
@@ -81,8 +84,11 @@ private:
     AK::IAkSinkPluginContext* m_pContext;
     bool m_bStarved;
     bool m_bDataReady;
-    jack_client_t* client = NULL;
-    jack_port_t* ports[2] = { NULL, NULL };
+    jack_client_t* client;
+    jack_port_t* ports[JACK_SINK_MAX_PORT_COUNT];
+    jack_ringbuffer_t* ringbuffer[JACK_SINK_MAX_PORT_COUNT];
+    void* buffer;
+    size_t buffer_size;
 };
 
 #endif // JackSink_H

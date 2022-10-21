@@ -58,16 +58,21 @@ JackSink::~JackSink()
 int JackSink::ProcessCallback(jack_nframes_t nframes, void* arg)
 {
     JackSink* obj = (JackSink*)arg;
-    jack_default_audio_sample_t* out1, * out2;
+    AkReal32* out;
     jack_nframes_t i;
+    jack_ringbuffer_data_t vec;
+    size_t size = sizeof(AkReal32);
 
-    out1 = (jack_default_audio_sample_t*)jack_port_get_buffer(obj->ports[0], nframes);
-    out2 = (jack_default_audio_sample_t*)jack_port_get_buffer(obj->ports[0], nframes);
-
-    for (i = 0; i < nframes; i++)
+    for (AkUInt32 ch_idx = 0; ch_idx < JACK_SINK_MAX_PORT_COUNT; ch_idx++)
     {
-        out1[i] = 0;
-        out2[i] = 0;
+        out = (AkReal32*)jack_port_get_buffer(obj->ports[ch_idx], nframes);
+        for (i = 0; i < nframes; i++)
+        {
+            jack_ringbuffer_get_read_vector(obj->ringbuffer[ch_idx], &vec);
+            out[i] = *(AkReal32*)vec.buf;
+            jack_ringbuffer_read_advance(obj->ringbuffer[ch_idx], vec.len);
+
+        }
     }
 
     return 0;
@@ -75,6 +80,8 @@ int JackSink::ProcessCallback(jack_nframes_t nframes, void* arg)
 
 AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginContext* in_pCtx, AK::IAkPluginParam* in_pParams, AkAudioFormat& io_rFormat)
 {
+    int i;
+    char name[100];
     jack_status_t status;
     m_pParams = (JackSinkParams*)in_pParams;
     m_pAllocator = in_pAllocator;
@@ -85,8 +92,13 @@ AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginC
         return AK_Fail;
     }
 
-    this->ports[0] = jack_port_register(this->client, "p0", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-    this->ports[1] = jack_port_register(this->client, "p1", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+    this->buffer_size = this->m_pContext->GlobalContext()->GetMaxBufferLength() * sizeof(AkReal32);
+    this->buffer = AK_PLUGIN_ALLOC(in_pAllocator, this->buffer_size);
+    for (i = 0; i < JACK_SINK_MAX_PORT_COUNT; i++) {
+        sprintf(name, "output_%d", i + 1);
+        this->ports[i] = jack_port_register(this->client, name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+        this->ringbuffer[i] = jack_ringbuffer_create(this->buffer_size);
+    }
 
     jack_set_process_callback(this->client, JackSink::ProcessCallback, this);
 
@@ -97,24 +109,25 @@ AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginC
 
 AKRESULT JackSink::Term(AK::IAkPluginMemAlloc* in_pAllocator)
 {
-    int rc;
-    AK_PLUGIN_DELETE(in_pAllocator, this);
-
     jack_deactivate(this->client);
 
-    jack_port_unregister(this->client, this->ports[0]);
-    jack_port_unregister(this->client, this->ports[1]);
-
-    rc = jack_client_close(this->client);
-    if (rc < 0) {
-        return AK_Fail;
+    for (int i = 0; i < JACK_SINK_MAX_PORT_COUNT; i++) {
+        jack_port_unregister(this->client, this->ports[i]);
+        jack_ringbuffer_free(this->ringbuffer[i]);
     }
+
+    jack_client_close(this->client);
+    AK_PLUGIN_FREE(in_pAllocator, this->buffer);
+    AK_PLUGIN_DELETE(in_pAllocator, this);
 
     return AK_Success;
 }
 
 AKRESULT JackSink::Reset()
 {
+    for (int i = 0; i < JACK_SINK_MAX_PORT_COUNT; i++) {
+        jack_ringbuffer_reset(this->ringbuffer[i]);
+    }
     return AK_Success;
 }
 
@@ -129,24 +142,49 @@ AKRESULT JackSink::GetPluginInfo(AkPluginInfo& out_rPluginInfo)
 AKRESULT JackSink::IsDataNeeded(AkUInt32& out_uNumFramesNeeded)
 {
     // Set the number of frames needed here
-    out_uNumFramesNeeded = m_pContext->GetNumRefillsInVoice();
+    out_uNumFramesNeeded = (AkUInt32)jack_ringbuffer_write_space(this->ringbuffer[0]);
     return AK_Success;
 }
 
 void JackSink::Consume(AkAudioBuffer* in_pInputBuffer, AkRamp in_gain)
 {
-    if (in_pInputBuffer->uValidFrames > 0)
+    AkUInt32 uNumFrames = in_pInputBuffer->uValidFrames;
+    jack_ringbuffer_data_t vec;
+    vec.len = sizeof(AkReal32);
+    vec.buf = NULL;
+
+    if (uNumFrames > 0)
     {
-        // Consume input buffer and send it to the output here
+        AkChannelConfig ch_conf = in_pInputBuffer->GetChannelConfig();
+        AkUInt32 uStrideOut = ch_conf.uNumChannels;
+
+        for (AkUInt32 ch_idx = 0; ch_idx < in_pInputBuffer->NumChannels(); ch_idx++) {
+            AkReal32* pIn = in_pInputBuffer->GetChannel(ch_idx);
+            AkReal32* pEnd = pIn + uNumFrames;
+            while (pIn < pEnd)
+            {
+                vec.buf = (char*)pIn;
+                jack_ringbuffer_get_write_vector(this->ringbuffer[ch_idx], &vec);
+                jack_ringbuffer_write_advance(this->ringbuffer[ch_idx], vec.len);
+                pIn++;
+            }
+        }
         m_bDataReady = true;
     }
 }
 
 void JackSink::OnFrameEnd()
 {
+    jack_ringbuffer_data_t vec;
     if (!m_bDataReady)
     {
         // Consume was not called for this audio frame, send silence to the output here
+        for (int i = 0; i < JACK_SINK_MAX_PORT_COUNT; i++) {
+            vec.len = jack_ringbuffer_write_space(this->ringbuffer[i]);
+            vec.buf = (char*)this->buffer;
+            jack_ringbuffer_get_write_vector(this->ringbuffer[i], &vec);
+            jack_ringbuffer_write_advance(this->ringbuffer[i], vec.len);
+        }
     }
 
     m_bDataReady = false;
