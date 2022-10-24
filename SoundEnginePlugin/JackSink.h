@@ -78,7 +78,8 @@ public:
     void ResetStarved() override;
 
 private:
-    static int ProcessCallback(jack_nframes_t nframes, void* arg);
+    static int processCallback(jack_nframes_t nframes, void* arg);
+    void writeLog(const char* fmt, ...);
     JackSinkParams* m_pParams;
     AK::IAkPluginMemAlloc* m_pAllocator;
     AK::IAkSinkPluginContext* m_pContext;
@@ -87,8 +88,8 @@ private:
     jack_client_t* client;
     jack_port_t* ports[JACK_SINK_MAX_PORT_COUNT];
     jack_ringbuffer_t* ringbuffer[JACK_SINK_MAX_PORT_COUNT];
-    void* buffer;
-    size_t buffer_size;
+    AkUInt32 channelCount;
+    FILE* fp;
 };
 
 #endif // JackSink_H
