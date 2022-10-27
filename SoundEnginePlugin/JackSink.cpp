@@ -30,6 +30,9 @@ the specific language governing permissions and limitations under the License.
 
 #include <AK/AkWwiseSDKVersion.h>
 
+#define DEFAULT_DATA_SIZE sizeof(AkReal32)
+#define DEFAULT_BUFFER_COUNT 2
+
 AK::IAkPlugin* CreateJackSink(AK::IAkPluginMemAlloc* in_pAllocator)
 {
     return AK_PLUGIN_NEW(in_pAllocator, JackSink());
@@ -60,32 +63,51 @@ int JackSink::processCallback(jack_nframes_t nframes, void* arg)
     JackSink* obj = (JackSink*)arg;
     AkReal32* out;
     jack_nframes_t i;
-    jack_ringbuffer_data_t vec;
-    size_t size = sizeof(AkReal32);
+    char buf[DEFAULT_DATA_SIZE];
 
-    for (AkUInt32 ch_idx = 0; ch_idx < obj->channelCount == 0; ch_idx++)
+    for (AkUInt32 ch_idx = 0; ch_idx < obj->channelCount; ch_idx++)
     {
         out = (AkReal32*)jack_port_get_buffer(obj->ports[ch_idx], nframes);
         for (i = 0; i < nframes; i++)
         {
-            jack_ringbuffer_get_read_vector(obj->ringbuffer[ch_idx], &vec);
-            out[i] = *(AkReal32*)vec.buf;
-            jack_ringbuffer_read_advance(obj->ringbuffer[ch_idx], vec.len);
-            out[i] = 0;
-
+            if (obj->ringbuffer[ch_idx] != NULL && jack_ringbuffer_read_space(obj->ringbuffer[ch_idx]) >= DEFAULT_DATA_SIZE) {
+                jack_ringbuffer_read(obj->ringbuffer[ch_idx], buf, DEFAULT_DATA_SIZE);
+                memcpy(out, buf, DEFAULT_DATA_SIZE);
+            }
+            else {
+                *out = 0;
+            }
+            out++;
         }
     }
+
+    ::InterlockedExchange(&obj->nFramesWritten, obj->nFramesWritten >= nframes ? obj->nFramesWritten - nframes : 0);
 
     return 0;
 }
 
+int JackSink::setBufferSizeCallback(jack_nframes_t nframes, void* arg)
+{
+    JackSink* obj = (JackSink*)arg;
+    ::InterlockedExchange(&obj->jackNFrames, nframes);
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+    obj->writeLog("jack frames %d", obj->jackNFrames);
+#endif
+
+    AKPLATFORM::AkSignalEvent(obj->onJackNFramesSet);
+
+    return 0;
+}
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
 void JackSink::writeLog(const char* fmt, ...) {
     va_list(args);
     va_start(args, fmt);
     SYSTEMTIME lt;
 
     if (this->fp == NULL) {
-        this->fp = fopen("C:\\Users\\moiri\\Documents\\JackSink.log", "a");
+        this->fp = fopen("C:\\Users\\moiri\\Documents\\JackSink.log", "w");
     }
 
     GetLocalTime(&lt);
@@ -94,6 +116,7 @@ void JackSink::writeLog(const char* fmt, ...) {
     fprintf(this->fp, "\n");
     fflush(this->fp);
 }
+#endif
 
 AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginContext* in_pCtx, AK::IAkPluginParam* in_pParams, AkAudioFormat& io_rFormat)
 {
@@ -109,51 +132,88 @@ AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginC
     AkUInt32 out_uOutputID;
     AkPluginID out_uDevicePlugin;
     in_pCtx->GetOutputID(out_uOutputID, out_uDevicePlugin);
+
+    this->channelCount = io_rFormat.GetNumChannels();
+    AKPLATFORM::AkCreateEvent(this->onJackNFramesSet);
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
     this->writeLog("=================================================================================================");
     this->writeLog("IsPrimary: %d", in_pCtx->IsPrimary());
     this->writeLog("node_uid: %d", node_uid);
     this->writeLog("output_id: %d, output_plugin_id: %d", out_uOutputID, out_uDevicePlugin);
-    this->channelCount = io_rFormat.GetNumChannels();
     this->writeLog("ChannelCount: %d", this->channelCount);
+#endif
 
     if (this->channelCount == 0 || this->channelCount > JACK_SINK_MAX_PORT_COUNT) {
         AKASSERT(!"Invalid channel count");
         return AK_Fail;
     }
 
-    this->writeLog("opening jack client...");
+    for (i = 0; i < this->channelCount; i++) {
+        this->ringbuffer[i] = NULL;
+    }
+
     this->client = jack_client_open("Wwise", JackNullOption, &status);
     if (client == nullptr) {
         return AK_Fail;
     }
-    this->writeLog("jack client opened");
 
-    this->writeLog("registering ports...");
-    size_t buffer_size = this->m_pContext->GlobalContext()->GetMaxBufferLength() * sizeof(AkReal32);
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+    this->writeLog("jack client opened");
+#endif
+
     for (i = 0; i < this->channelCount; i++) {
         sprintf(port_name, "output_%d", i + 1);
         this->ports[i] = jack_port_register(this->client, port_name, JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-        this->ringbuffer[i] = jack_ringbuffer_create(buffer_size);
     }
-    this->writeLog("ports registered and buffers created");
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+    this->writeLog("ports registered");
+#endif
 
     jack_set_process_callback(this->client, JackSink::processCallback, this);
+    jack_set_buffer_size_callback(this->client, JackSink::setBufferSizeCallback, this);
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
     this->writeLog("callback set");
+#endif
 
     jack_activate(this->client);
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
     this->writeLog("client activated");
+#endif
+
+    AKPLATFORM::AkWaitForEvent(this->onJackNFramesSet);
+    this->wwiseNFrames = this->m_pContext->GlobalContext()->GetMaxBufferLength();
+    this->nFramesMax = this->wwiseNFrames > this->jackNFrames ? this->wwiseNFrames : this->jackNFrames;
+    size_t buffer_size = DEFAULT_DATA_SIZE * this->nFramesMax * DEFAULT_BUFFER_COUNT;
+
+    for (i = 0; i < this->channelCount; i++) {
+        this->ringbuffer[i] = jack_ringbuffer_create(buffer_size);
+    }
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+    this->writeLog("buffers created (nframes wwise: %d, nframes jack: %d, buffer size: %d)", this->wwiseNFrames, this->jackNFrames, buffer_size);
+#endif
 
     for (i = 0; i < this->channelCount; i++) {
         sprintf(port_name, "SceneRotator:input_%d", i + 1);
         port = jack_port_by_name(this->client, port_name);
         if (port != NULL) {
             rc = jack_connect(this->client, jack_port_name(this->ports[i]), port_name);
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
             this->writeLog("port connection %s(%s, %d) -> %s(%s, %d): %d", jack_port_name(this->ports[i]), jack_port_type(this->ports[i]), jack_port_flags(this->ports[i]), jack_port_name(port), jack_port_type(port), jack_port_flags(port), rc);
+#endif
         }
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
         else
         {
             this->writeLog("cannot connect to port '%s'", port_name);
         }
+#endif
     }
 
     return AK_Success;
@@ -162,21 +222,33 @@ AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginC
 AKRESULT JackSink::Term(AK::IAkPluginMemAlloc* in_pAllocator)
 {
     jack_deactivate(this->client);
-    this->writeLog("client deactivated");
 
-    this->writeLog("unregistering ports...");
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+    this->writeLog("client deactivated");
+#endif
+
     for (unsigned int i = 0; i < this->channelCount; i++) {
         jack_port_unregister(this->client, this->ports[i]);
         jack_ringbuffer_free(this->ringbuffer[i]);
     }
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
     this->writeLog("ports unregistered");
+#endif
 
     jack_client_close(this->client);
-    this->writeLog("client closed");
 
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+    this->writeLog("client closed");
+#endif
+
+    AKPLATFORM::AkDestroyEvent(this->onJackNFramesSet);
     AK_PLUGIN_DELETE(in_pAllocator, this);
 
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
     this->writeLog("*************************************************************************************************");
+#endif
     fclose(this->fp);
 
     return AK_Success;
@@ -184,7 +256,11 @@ AKRESULT JackSink::Term(AK::IAkPluginMemAlloc* in_pAllocator)
 
 AKRESULT JackSink::Reset()
 {
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
     this->writeLog("|||||||||||||||||||||||||");
+#endif
+
     for (unsigned int i = 0; i < this->channelCount; i++) {
         jack_ringbuffer_reset(this->ringbuffer[i]);
     }
@@ -202,63 +278,37 @@ AKRESULT JackSink::GetPluginInfo(AkPluginInfo& out_rPluginInfo)
 AKRESULT JackSink::IsDataNeeded(AkUInt32& out_uNumFramesNeeded)
 {
     // Set the number of frames needed here
-    //out_uNumFramesNeeded = (AkUInt32)jack_ringbuffer_write_space(this->ringbuffer[0]);
-    out_uNumFramesNeeded = m_pContext->GetNumRefillsInVoice();
+    out_uNumFramesNeeded = DEFAULT_BUFFER_COUNT - this->nFramesWritten / this->wwiseNFrames;
     return AK_Success;
 }
 
 void JackSink::Consume(AkAudioBuffer* in_pInputBuffer, AkRamp in_gain)
 {
     AkUInt32 uNumFrames = in_pInputBuffer->uValidFrames;
-    jack_ringbuffer_data_t vec[2];
-    size_t size = sizeof(AkReal32);
 
     if (uNumFrames > 0)
     {
-        AkChannelConfig ch_conf = in_pInputBuffer->GetChannelConfig();
-        AkUInt32 uStrideOut = ch_conf.uNumChannels;
-
         for (AkUInt32 ch_idx = 0; ch_idx < in_pInputBuffer->NumChannels(); ch_idx++) {
             AkReal32* pIn = in_pInputBuffer->GetChannel(ch_idx);
             AkReal32* pEnd = pIn + uNumFrames;
             while (pIn < pEnd)
             {
-                jack_ringbuffer_get_write_vector(this->ringbuffer[ch_idx], vec);
-                if (vec[0].len >= size) {
-                    memcpy(vec[0].buf, pIn, size);
-                    jack_ringbuffer_write_advance(this->ringbuffer[ch_idx], size);
-                }
-                else if (vec[1].len >= size) {
-                    // buffer size is a multiple of four so data can never be split
-                    memcpy(vec[1].buf, pIn, size);
-                    jack_ringbuffer_write_advance(this->ringbuffer[ch_idx], size);
-                }
-                else {
-                    // jack is too slow reading data
-                }
+                jack_ringbuffer_write(this->ringbuffer[ch_idx], (char*)pIn, DEFAULT_DATA_SIZE);
                 pIn++;
             }
         }
+        
+        ::InterlockedExchange(&this->nFramesWritten, this->nFramesWritten + uNumFrames);
         m_bDataReady = true;
     }
 }
 
 void JackSink::OnFrameEnd()
 {
-    jack_ringbuffer_data_t vec[2];
     if (!m_bDataReady)
     {
         // Consume was not called for this audio frame, send silence to the output here
-        for (int i = 0; i < JACK_SINK_MAX_PORT_COUNT; i++) {
-            jack_ringbuffer_get_write_vector(this->ringbuffer[i], vec);
-            if (vec[0].len > 0) {
-                memset(vec[0].buf, 0, vec[0].len);
-            }
-            if (vec[1].len > 0) {
-                memset(vec[1].buf, 0, vec[1].len);
-            }
-            jack_ringbuffer_write_advance(this->ringbuffer[i], vec[0].len + vec[1].len);
-        }
+        ::InterlockedExchange(&this->nFramesWritten, this->nFramesWritten + this->wwiseNFrames);
     }
 
     m_bDataReady = false;

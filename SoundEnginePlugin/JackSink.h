@@ -28,6 +28,7 @@ the specific language governing permissions and limitations under the License.
 #define JackSink_H
 
 #define JACK_SINK_MAX_PORT_COUNT 36
+//#define USE_MY_CUSTOM_DEBUG_LOG
 
 #include "JackSinkParams.h"
 #include "jack/types.h"
@@ -79,7 +80,8 @@ public:
 
 private:
     static int processCallback(jack_nframes_t nframes, void* arg);
-    void writeLog(const char* fmt, ...);
+    static int setBufferSizeCallback(jack_nframes_t nframes, void* arg);
+
     JackSinkParams* m_pParams;
     AK::IAkPluginMemAlloc* m_pAllocator;
     AK::IAkSinkPluginContext* m_pContext;
@@ -88,8 +90,19 @@ private:
     jack_client_t* client;
     jack_port_t* ports[JACK_SINK_MAX_PORT_COUNT];
     jack_ringbuffer_t* ringbuffer[JACK_SINK_MAX_PORT_COUNT];
+    AkUInt32 volatile jackNFrames = 0;
+    AkUInt32 wwiseNFrames;
+    AkUInt32 volatile nFramesWritten = 0;
+    AkUInt32 nFramesMax;
     AkUInt32 channelCount;
+    AkEvent onJackNFramesSet;
     FILE* fp;
+
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+private:
+    void writeLog(const char* fmt, ...);
+#endif
 };
 
 #endif // JackSink_H
