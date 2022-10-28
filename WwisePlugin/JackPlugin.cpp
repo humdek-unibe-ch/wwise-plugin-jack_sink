@@ -38,7 +38,10 @@ JackPlugin::~JackPlugin()
 bool JackPlugin::GetBankParameters(const GUID & in_guidPlatform, AK::Wwise::Plugin::DataWriter& in_dataWriter) const
 {
     // Write bank data here
-    //in_dataWriter.WriteReal32(m_propertySet.GetReal32(in_guidPlatform, "Placeholder"));
+    in_dataWriter.WriteString(m_propertySet.GetString(in_guidPlatform, "jcName"));
+    in_dataWriter.WriteString(m_propertySet.GetString(in_guidPlatform, "jcOutPortPrefix"));
+    in_dataWriter.WriteString(m_propertySet.GetString(in_guidPlatform, "jtName"));
+    in_dataWriter.WriteString(m_propertySet.GetString(in_guidPlatform, "jtInPortPrefix"));
 
     return true;
 }
