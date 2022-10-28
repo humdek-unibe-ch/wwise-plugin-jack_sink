@@ -32,16 +32,22 @@ the specific language governing permissions and limitations under the License.
 
 // Add parameters IDs here, those IDs should map to the AudioEnginePropertyID
 // attributes in the xml property definition.
-static const AkPluginParamID PARAM_PLACEHOLDER_ID = 0;
-static const AkUInt32 NUM_PARAMS = 1;
+static const AkPluginParamID PARAM_JC_NAME_ID = 1;
+static const AkPluginParamID PARAM_JC_OUT_PORT_PREFIX_ID = 2;
+static const AkPluginParamID PARAM_JT_NAME_ID = 3;
+static const AkPluginParamID PARAM_JT_IN_PORT_PREFIX_ID = 4;
+static const AkUInt32 NUM_PARAMS = 4;
 
 struct JackRTPCParams
 {
-    AkReal32 fPlaceholder;
 };
 
 struct JackNonRTPCParams
 {
+    char jcName[1000];
+    char jcOutPortPrefix[1000];
+    char jtInPortPrefix[1000];
+    char jtName[1000];
 };
 
 struct JackSinkParams

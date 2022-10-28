@@ -53,7 +53,10 @@ AKRESULT JackSinkParams::Init(AK::IAkPluginMemAlloc* in_pAllocator, const void* 
     if (in_ulBlockSize == 0)
     {
         // Initialize default parameters here
-        RTPC.fPlaceholder = 0.0f;
+        sprintf(NonRTPC.jcName, "WwiseJackSink");
+        sprintf(NonRTPC.jcOutPortPrefix, "output");
+        sprintf(NonRTPC.jtName, "SceneRotator");
+        sprintf(NonRTPC.jtInPortPrefix, "input");
         m_paramChangeHandler.SetAllParamChanges();
         return AK_Success;
     }
@@ -69,11 +72,15 @@ AKRESULT JackSinkParams::Term(AK::IAkPluginMemAlloc* in_pAllocator)
 
 AKRESULT JackSinkParams::SetParamsBlock(const void* in_pParamsBlock, AkUInt32 in_ulBlockSize)
 {
+    AkUInt32 len;
     AKRESULT eResult = AK_Success;
     AkUInt8* pParamsBlock = (AkUInt8*)in_pParamsBlock;
 
     // Read bank data here
-    RTPC.fPlaceholder = READBANKDATA(AkReal32, pParamsBlock, in_ulBlockSize);
+    sprintf(NonRTPC.jcName, READBANKSTRING(pParamsBlock, in_ulBlockSize, len));
+    sprintf(NonRTPC.jcOutPortPrefix, READBANKSTRING(pParamsBlock, in_ulBlockSize, len));
+    sprintf(NonRTPC.jtName, READBANKSTRING(pParamsBlock, in_ulBlockSize, len));
+    sprintf(NonRTPC.jtInPortPrefix, READBANKSTRING(pParamsBlock, in_ulBlockSize, len));
     CHECKBANKDATASIZE(in_ulBlockSize, eResult);
     m_paramChangeHandler.SetAllParamChanges();
 
@@ -87,9 +94,21 @@ AKRESULT JackSinkParams::SetParam(AkPluginParamID in_paramID, const void* in_pVa
     // Handle parameter change here
     switch (in_paramID)
     {
-    case PARAM_PLACEHOLDER_ID:
-        RTPC.fPlaceholder = *((AkReal32*)in_pValue);
-        m_paramChangeHandler.SetParamChange(PARAM_PLACEHOLDER_ID);
+    case PARAM_JC_NAME_ID:
+        sprintf(NonRTPC.jcName, (const char*)in_pValue);
+        m_paramChangeHandler.SetParamChange(PARAM_JC_NAME_ID);
+        break;
+    case PARAM_JC_OUT_PORT_PREFIX_ID:
+        sprintf(NonRTPC.jcOutPortPrefix, (const char*)in_pValue);
+        m_paramChangeHandler.SetParamChange(PARAM_JC_OUT_PORT_PREFIX_ID);
+        break;
+    case PARAM_JT_NAME_ID:
+        sprintf(NonRTPC.jtName, (const char*)in_pValue);
+        m_paramChangeHandler.SetParamChange(PARAM_JT_NAME_ID);
+        break;
+    case PARAM_JT_IN_PORT_PREFIX_ID:
+        sprintf(NonRTPC.jtInPortPrefix, (const char*)in_pValue);
+        m_paramChangeHandler.SetParamChange(PARAM_JT_IN_PORT_PREFIX_ID);
         break;
     default:
         eResult = AK_InvalidParameter;

@@ -89,18 +89,19 @@ private:
     bool m_bDataReady;
     jack_client_t* client;
     jack_port_t* ports[JACK_SINK_MAX_PORT_COUNT];
-    jack_ringbuffer_t* ringbuffer[JACK_SINK_MAX_PORT_COUNT];
-    AkUInt32 volatile jackNFrames = 0;
+    jack_ringbuffer_t* rb;
+    AkUInt32 jackNFrames;
     AkUInt32 wwiseNFrames;
-    AkUInt32 volatile nFramesWritten = 0;
-    AkUInt32 nFramesMax;
+    AkUInt32 minNFrames;
+    AkUInt32 maxNFrames;
+    AkUInt32 volatile nFramesWritten;
     AkUInt32 channelCount;
     AkEvent onJackNFramesSet;
-    FILE* fp;
 
 
 #ifdef USE_MY_CUSTOM_DEBUG_LOG
 private:
+    FILE* fp;
     void writeLog(const char* fmt, ...);
 #endif
 };

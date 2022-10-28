@@ -29,27 +29,30 @@ See https://www.audiokinetic.com/library/edge/?source=SDK&id=plugin__xml.html
 for the documentation about the plugin xml format
 -->
 <PluginModule>
-  <SinkPlugin Name="Jack" CompanyID="64" PluginID="14931">
-    <PluginInfo>
-      <PlatformSupport>
-        <Platform Name="Any"></Platform>
-      </PlatformSupport>
-    </PluginInfo>
-    <Properties>
-      <!-- Add your property definitions here -->
-      <Property Name="Placeholder" Type="Real32" SupportRTPCType="Exclusive" DisplayName="Placeholder">
-        <UserInterface Step="0.1" Fine="0.001" Decimals="3" UIMax="10" />
-        <DefaultValue>0.0</DefaultValue>
-        <AudioEnginePropertyID>0</AudioEnginePropertyID>
-        <Restrictions>
-          <ValueRestriction>
-            <Range Type="Real32">
-              <Min>0.001</Min>
-              <Max>1000</Max>
-            </Range>
-          </ValueRestriction>
-        </Restrictions>
-      </Property>
-    </Properties>
-  </SinkPlugin>
+	<SinkPlugin Name="Jack" CompanyID="64" PluginID="14931">
+		<PluginInfo>
+			<PlatformSupport>
+				<Platform Name="Any"></Platform>
+			</PlatformSupport>
+		</PluginInfo>
+		<Properties>
+			<!-- Add your property definitions here -->
+			<Property Name="jcName" Type="string" DisplayName="Client Name" DisplayGroup="Jack Graph/Client">
+				<DefaultValue>WwiseJackSink</DefaultValue>
+				<AudioEnginePropertyID>1</AudioEnginePropertyID>
+			</Property>
+			<Property Name="jcOutPortPrefix" Type="string" DisplayName="Client Output Port Prefix" DisplayGroup="Jack Graph/Client">
+				<DefaultValue>output</DefaultValue>
+				<AudioEnginePropertyID>2</AudioEnginePropertyID>
+			</Property>
+			<Property Name="jtName" Type="string" DisplayName="Target Client Input Port Prefix" DisplayGroup="Jack Graph/Target Client">
+				<DefaultValue>SceneRotator</DefaultValue>
+				<AudioEnginePropertyID>3</AudioEnginePropertyID>
+			</Property>
+			<Property Name="jtInPortPrefix" Type="string" DisplayName="Target Client Name" DisplayGroup="Jack Graph/Target Client">
+				<DefaultValue>input</DefaultValue>
+				<AudioEnginePropertyID>4</AudioEnginePropertyID>
+			</Property>
+		</Properties>
+	</SinkPlugin>
 </PluginModule>
