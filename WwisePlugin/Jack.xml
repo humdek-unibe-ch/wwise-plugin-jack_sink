@@ -45,11 +45,11 @@ for the documentation about the plugin xml format
 				<DefaultValue>output</DefaultValue>
 				<AudioEnginePropertyID>2</AudioEnginePropertyID>
 			</Property>
-			<Property Name="jtName" Type="string" DisplayName="Target Client Input Port Prefix" DisplayGroup="Jack Graph/Target Client">
+			<Property Name="jtName" Type="string" DisplayName="Target Client Name" DisplayGroup="Jack Graph/Target Client">
 				<DefaultValue>SceneRotator</DefaultValue>
 				<AudioEnginePropertyID>3</AudioEnginePropertyID>
 			</Property>
-			<Property Name="jtInPortPrefix" Type="string" DisplayName="Target Client Name" DisplayGroup="Jack Graph/Target Client">
+			<Property Name="jtInPortPrefix" Type="string" DisplayName="Target Client Input Port Prefix" DisplayGroup="Jack Graph/Target Client">
 				<DefaultValue>input</DefaultValue>
 				<AudioEnginePropertyID>4</AudioEnginePropertyID>
 			</Property>

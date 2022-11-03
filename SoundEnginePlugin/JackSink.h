@@ -27,6 +27,7 @@ the specific language governing permissions and limitations under the License.
 #ifndef JackSink_H
 #define JackSink_H
 
+#define DEFAULT_DATA_SIZE sizeof(AkReal32)
 #define JACK_SINK_MAX_PORT_COUNT 36
 //#define USE_MY_CUSTOM_DEBUG_LOG
 
@@ -94,9 +95,13 @@ private:
     AkUInt32 wwiseNFrames;
     AkUInt32 minNFrames;
     AkUInt32 maxNFrames;
-    AkUInt32 volatile nFramesWritten;
+    AkUInt32 readFrameCount;
+    AkUInt32 writeFrameCount;
+    AkUInt32 volatile rbFrameCount;
+    AkUInt32 volatile needCount;
     AkUInt32 channelCount;
     AkEvent onJackNFramesSet;
+    char silence[DEFAULT_DATA_SIZE];
 
 
 #ifdef USE_MY_CUSTOM_DEBUG_LOG
