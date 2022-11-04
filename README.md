@@ -26,7 +26,7 @@ The here described plugin was tested with
 Unfortunately I was not able to package the plugin for the Wwise Launcher because of the missing MacOs platform build (no mac at my disposal at the time of this writing).
 The platform MacOs must be enabled when installing the Wwise SDK in order for the Wwsie UE4 integration to work, hence, the plugin must also support the platform MacOs to be accepted as a valid source in the Wwise Launcher.
 
-As a consequence, the plugin must be compiled (precompiled targets are provided in the dist folder) and installed manually.
+As a consequence, the plugin must be compiled (precompiled targets are provided in the `bundles` folder) and installed manually.
 
 ### Setup Wwise with UE4
 
@@ -53,6 +53,7 @@ Modify the `AkAudioDevice` module to incorporate the JackSink:
 * Link the JackSink library by adding it to the `AKLibs` list in `AkAudio.Build.cs` (around line 158)
 * Link the Jack library by adding the path to the library with `PublicAdditionalLibraries.Add("C:/Program Files/JACK2/lib/libjack64.lib");` in `AkAudio.Build.cs` (around line 309).
   It might be a good option to add the file `libjack64.lib` to the Wwise SDK folder with the [packaging tool](https://www.audiokinetic.com/library/2022.1.0_7985/?source=SDK&id=effectplugin_tools_packaging.html) and the add the library the same way as the `JackSink` library.
+* Compile the UE4 project (this can take several minutes to complite when doing it the first time)
 * In the Unreal project settings (`Edit/Project Settings ...`)
    - set the main output of the game engine to the Jack sink (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Audio Device Shareset` to `Jack`).
    - set the channel count (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Number of Channels` to `36`). If this is set to 0 the Jack Sink will terminate immediately after its initialisation.
@@ -63,7 +64,7 @@ Modify the `AkAudioDevice` module to incorporate the JackSink:
 Unfortunately, it is quite a mess to cope with all the different versions of Wwise, UE4, Visual Studio and the corresponding building toolchains and libraries.
 Here is what was used to develop this plugin:
 
-- Wwise SDK Version `2021.1.10.7883`
+- Wwise SDK Version `2021.1.10.7883`.
   At the time of development a newer 2022 version was available but flagged as beta (in the newer version the [workflow with event-based packaging was marked as deprecated](https://www.audiokinetic.com/library/2022.1.0_7985/?source=UE4&id=using_workflow.html))
 - Visual Studio 2022 with
    - Desktop Development with C++
@@ -79,9 +80,10 @@ Here is what was used to develop this plugin:
 - Unreal Engine v4.27.2
 
 **Important** It is possible to compile all the projects in Visual Studio 2022.
-I never converted the project files and left them in their corresponding version (`_vc150`: Visual Studio 2017, `_vc160`: Visual Studio 2019), something I would recommend to preserve the manual changes that were necessery in order to correctly link the jackaudio library.
+I never converted the project files and left them in their corresponding version (`_vc150`: Visual Studio 2017, `_vc160`: Visual Studio 2019), something I would recommend to keep this way in order to preserve the manual changes that were necessery to correctly link the jackaudio library.
 
 In order for changes in the plugin code to take effect in the Wwise authoring tool
+* make sure to close the Wwise Authoring tool (if a build fails with an error of a missing Jack.dll file a likely reason is that a still open Wwise Authoring tool locked the Jack.dll file and the build process was unable to overwrite the ofl dll with the new one)
 * open `Jack_Windows_vc160_static.sln`
 * build with `Profile` configuratrion
 * open `WwisePlugin/Jack_Authoring_Windows_vc160.sln`
