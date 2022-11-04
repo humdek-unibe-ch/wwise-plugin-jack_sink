@@ -45,6 +45,10 @@ for the documentation about the plugin xml format
 				<DefaultValue>output</DefaultValue>
 				<AudioEnginePropertyID>2</AudioEnginePropertyID>
 			</Property>
+			<Property Name="jtAutoConnect" Type="bool" DisplayName="Connect to Target Client" DisplayGroup="Jack Graph/Target Client">
+				<DefaultValue>false</DefaultValue>
+				<AudioEnginePropertyID>5</AudioEnginePropertyID>
+			</Property>
 			<Property Name="jtName" Type="string" DisplayName="Target Client Name" DisplayGroup="Jack Graph/Target Client">
 				<DefaultValue>SceneRotator</DefaultValue>
 				<AudioEnginePropertyID>3</AudioEnginePropertyID>

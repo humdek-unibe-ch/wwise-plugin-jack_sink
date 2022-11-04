@@ -57,6 +57,7 @@ AKRESULT JackSinkParams::Init(AK::IAkPluginMemAlloc* in_pAllocator, const void* 
         sprintf(NonRTPC.jcOutPortPrefix, "output");
         sprintf(NonRTPC.jtName, "SceneRotator");
         sprintf(NonRTPC.jtInPortPrefix, "input");
+        NonRTPC.jtAutoConnect = false;
         m_paramChangeHandler.SetAllParamChanges();
         return AK_Success;
     }
@@ -81,6 +82,7 @@ AKRESULT JackSinkParams::SetParamsBlock(const void* in_pParamsBlock, AkUInt32 in
     sprintf(NonRTPC.jcOutPortPrefix, READBANKSTRING(pParamsBlock, in_ulBlockSize, len));
     sprintf(NonRTPC.jtName, READBANKSTRING(pParamsBlock, in_ulBlockSize, len));
     sprintf(NonRTPC.jtInPortPrefix, READBANKSTRING(pParamsBlock, in_ulBlockSize, len));
+    NonRTPC.jtAutoConnect = READBANKDATA(bool, pParamsBlock, in_ulBlockSize);
     CHECKBANKDATASIZE(in_ulBlockSize, eResult);
     m_paramChangeHandler.SetAllParamChanges();
 
@@ -101,6 +103,10 @@ AKRESULT JackSinkParams::SetParam(AkPluginParamID in_paramID, const void* in_pVa
     case PARAM_JC_OUT_PORT_PREFIX_ID:
         sprintf(NonRTPC.jcOutPortPrefix, (const char*)in_pValue);
         m_paramChangeHandler.SetParamChange(PARAM_JC_OUT_PORT_PREFIX_ID);
+        break;
+    case PARAM_JT_AUTO_CONNECT_ID:
+        m_paramChangeHandler.SetParamChange(PARAM_JT_AUTO_CONNECT_ID);
+        NonRTPC.jtAutoConnect = *reinterpret_cast<const bool*>(in_pValue);
         break;
     case PARAM_JT_NAME_ID:
         sprintf(NonRTPC.jtName, (const char*)in_pValue);

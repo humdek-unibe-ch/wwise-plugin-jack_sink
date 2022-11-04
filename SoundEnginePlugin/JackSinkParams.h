@@ -36,7 +36,8 @@ static const AkPluginParamID PARAM_JC_NAME_ID = 1;
 static const AkPluginParamID PARAM_JC_OUT_PORT_PREFIX_ID = 2;
 static const AkPluginParamID PARAM_JT_NAME_ID = 3;
 static const AkPluginParamID PARAM_JT_IN_PORT_PREFIX_ID = 4;
-static const AkUInt32 NUM_PARAMS = 4;
+static const AkPluginParamID PARAM_JT_AUTO_CONNECT_ID = 5;
+static const AkUInt32 NUM_PARAMS = 5;
 
 struct JackRTPCParams
 {
@@ -48,6 +49,7 @@ struct JackNonRTPCParams
     char jcOutPortPrefix[1000];
     char jtInPortPrefix[1000];
     char jtName[1000];
+    bool jtAutoConnect;
 };
 
 struct JackSinkParams

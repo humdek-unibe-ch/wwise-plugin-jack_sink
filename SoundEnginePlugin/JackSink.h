@@ -30,6 +30,7 @@ the specific language governing permissions and limitations under the License.
 #define DEFAULT_DATA_SIZE sizeof(AkReal32)
 #define JACK_SINK_MAX_PORT_COUNT 36
 //#define USE_MY_CUSTOM_DEBUG_LOG
+//#define USE_MY_CUSTOM_DEBUG_LOG_RT
 
 #include "JackSinkParams.h"
 #include "jack/types.h"

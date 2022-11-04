@@ -92,7 +92,7 @@ int JackSink::processCallback(jack_nframes_t nframes, void* arg)
         }
         ::InterlockedExchange(&obj->rbFrameCount, obj->rbFrameCount > 0 ? obj->rbFrameCount - 1 : 0);
     }
-#ifdef USE_MY_CUSTOM_DEBUG_LOG
+#ifdef USE_MY_CUSTOM_DEBUG_LOG_RT
     obj->writeLog("read data");
 #endif
 
@@ -155,7 +155,7 @@ AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginC
     this->writeLog("node_uid: %d", node_uid);
     this->writeLog("output_id: %d, output_plugin_id: %d", out_uOutputID, out_uDevicePlugin);
     this->writeLog("ChannelCount: %d", this->channelCount);
-    this->writeLog("Params: %s, %s, %s, %s", this->m_pParams->NonRTPC.jcName, this->m_pParams->NonRTPC.jcOutPortPrefix, this->m_pParams->NonRTPC.jtName, this->m_pParams->NonRTPC.jtInPortPrefix);
+    this->writeLog("Params: %s, %s, %d, %s, %s", this->m_pParams->NonRTPC.jcName, this->m_pParams->NonRTPC.jcOutPortPrefix, this->m_pParams->NonRTPC.jtAutoConnect, this->m_pParams->NonRTPC.jtName, this->m_pParams->NonRTPC.jtInPortPrefix);
 #endif
 
     if (this->channelCount == 0 || this->channelCount > JACK_SINK_MAX_PORT_COUNT) {
@@ -206,24 +206,26 @@ AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginC
 #ifdef USE_MY_CUSTOM_DEBUG_LOG
     this->writeLog("buffers created (nframes wwise: %d, nframes jack: %d, read factor: %d, write factor: %d, buffer size: %d)", this->wwiseNFrames, this->jackNFrames, this->readFrameCount, this->writeFrameCount, buffer_size);
 #endif
-
-    for (i = 0; i < this->channelCount; i++) {
-        sprintf(port_name, "%s:%s_%d", this->m_pParams->NonRTPC.jtName, this->m_pParams->NonRTPC.jtInPortPrefix, i + 1);
-        port = jack_port_by_name(this->client, port_name);
-        if (port != NULL) {
-            rc = jack_connect(this->client, jack_port_name(this->ports[i]), port_name);
-
-#ifdef USE_MY_CUSTOM_DEBUG_LOG
-            this->writeLog("port connection %s(%s, %d) -> %s(%s, %d): %d", jack_port_name(this->ports[i]), jack_port_type(this->ports[i]), jack_port_flags(this->ports[i]), jack_port_name(port), jack_port_type(port), jack_port_flags(port), rc);
-#endif
-        }
+    
+    if (this->m_pParams->NonRTPC.jtAutoConnect) {
+        for (i = 0; i < this->channelCount; i++) {
+            sprintf(port_name, "%s:%s_%d", this->m_pParams->NonRTPC.jtName, this->m_pParams->NonRTPC.jtInPortPrefix, i + 1);
+            port = jack_port_by_name(this->client, port_name);
+            if (port != NULL) {
+                rc = jack_connect(this->client, jack_port_name(this->ports[i]), port_name);
 
 #ifdef USE_MY_CUSTOM_DEBUG_LOG
-        else
-        {
-            this->writeLog("cannot connect to port '%s'", port_name);
-        }
+                this->writeLog("port connection %s(%s, %d) -> %s(%s, %d): %d", jack_port_name(this->ports[i]), jack_port_type(this->ports[i]), jack_port_flags(this->ports[i]), jack_port_name(port), jack_port_type(port), jack_port_flags(port), rc);
 #endif
+            }
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+            else
+            {
+                this->writeLog("cannot connect to port '%s'", port_name);
+            }
+#endif
+        }
     }
 
     return AK_Success;
@@ -304,7 +306,7 @@ AKRESULT JackSink::IsDataNeeded(AkUInt32& out_uNumFramesNeeded)
         out_uNumFramesNeeded = 0;
     }
 
-#ifdef USE_MY_CUSTOM_DEBUG_LOG
+#ifdef USE_MY_CUSTOM_DEBUG_LOG_RT
     this->writeLog("needed (%d): %d", this->rbFrameCount, out_uNumFramesNeeded);
 #endif
     return AK_Success;
@@ -312,7 +314,6 @@ AKRESULT JackSink::IsDataNeeded(AkUInt32& out_uNumFramesNeeded)
 
 void JackSink::Consume(AkAudioBuffer* in_pInputBuffer, AkRamp in_gain)
 {
-    AkUInt32 sampleStartIdx;
     AkUInt32 uNumFrames = in_pInputBuffer->uValidFrames;
     in_pInputBuffer->ZeroPadToMaxFrames();
 
@@ -329,7 +330,7 @@ void JackSink::Consume(AkAudioBuffer* in_pInputBuffer, AkRamp in_gain)
         ::InterlockedIncrement(&this->rbFrameCount);
     }
 
-#ifdef USE_MY_CUSTOM_DEBUG_LOG
+#ifdef USE_MY_CUSTOM_DEBUG_LOG_RT
     this->writeLog("write data");
 #endif
     this->m_bDataReady = true;
@@ -349,7 +350,7 @@ void JackSink::OnFrameEnd()
             }
         }
 
-#ifdef USE_MY_CUSTOM_DEBUG_LOG
+#ifdef USE_MY_CUSTOM_DEBUG_LOG_RT
         this->writeLog("write silence");
 #endif
         ::InterlockedExchange(&this->rbFrameCount, this->rbFrameCount + this->writeFrameCount);

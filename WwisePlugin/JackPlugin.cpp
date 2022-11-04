@@ -42,6 +42,7 @@ bool JackPlugin::GetBankParameters(const GUID & in_guidPlatform, AK::Wwise::Plug
     in_dataWriter.WriteString(m_propertySet.GetString(in_guidPlatform, "jcOutPortPrefix"));
     in_dataWriter.WriteString(m_propertySet.GetString(in_guidPlatform, "jtName"));
     in_dataWriter.WriteString(m_propertySet.GetString(in_guidPlatform, "jtInPortPrefix"));
+    in_dataWriter.WriteBool(m_propertySet.GetBool(in_guidPlatform, "jtAutoConnect"));
 
     return true;
 }
