@@ -43,16 +43,28 @@ As a consequence, the plugin must be compiled (precompiled targets are provided 
       * in "Wwise -> User Settings" enable "WAAPI -> Auto Connect to WAAPI"
       * Close the settings window
    * Enable "Window -> Waapi Picker" to modify Wwise content directly from UE4
-* Launch Wwise project
+   * For C++ Projects: Add `AkAudio` to `PublicDependencyModuleNames` in the Unreal Project build file (`Unreal Project Name.Build.cs`)
+
+### Manually Install Jack Plugin Files
+
+For a minimal Setup copy the following files:
+
+* Authoring/x64/Release/bin/Plugins/* -> Wwise Installation Folder/Authoring/x64/Release/bin/Plugins/.
+* SDK/x64_vc160/Release/bin/* -> Wwise Installation Folder/SDK/x64_vc160/Release/bin/.
+* SDK/x64_vc160/Release/lib/* -> Wwise Installation Folder/SDK/x64_vc160/Release/lib/.
+* SDK/include/AK/Plugin/* -> Unreal Project Folder/Plugins/Wwise/ThirdParty/include/AK/Plugin/.
+* SDK/x64_vc160/Profile/bin/* -> Unreal Project Folder/Plugins/Wwise/ThirdParty/x64_vc160/Profile/bin/.
+* SDK/x64_vc160/Profile/lib/* -> Unreal Project Folder/Plugins/Wwise/ThirdParty/x64_vc160/Profile/lib/.
+
+Depending on the UE4 compiler settings `vc150` (VS 2017) targets need to be copied instead of `vc160` (VS 2019).
 
 ### Register the Jack Wwise Plugin in UE4
 
 Modify the `AkAudioDevice` module to incorporate the JackSink:
 
 * Add the JackSink factory header (`#include <AK/Plugin/JackSinkFactory.h>`) to `AkAudioDevice.cpp` (around line 90)
-* Link the JackSink library by adding it to the `AKLibs` list in `AkAudio.Build.cs` (around line 158)
-* Link the Jack library by adding the path to the library with `PublicAdditionalLibraries.Add("C:/Program Files/JACK2/lib/libjack64.lib");` in `AkAudio.Build.cs` (around line 309).
-  It might be a good option to add the file `libjack64.lib` to the Wwise SDK folder with the [packaging tool](https://www.audiokinetic.com/library/2022.1.0_7985/?source=SDK&id=effectplugin_tools_packaging.html) and the add the library the same way as the `JackSink` library.
+* Link the JackSink library by adding `JackSink` to the `AKLibs` list in `AkAudio.Build.cs` (around line 158)
+* Link Jack2 library by adding `libjack64` to the `AKLibs` list in `AkAudio.Build.cs` (around line 158)
 * Compile the UE4 project (this can take several minutes to complite when doing it the first time)
 * In the Unreal project settings (`Edit/Project Settings ...`)
    - set the main output of the game engine to the Jack sink (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Audio Device Shareset` to `Jack`).
@@ -69,11 +81,11 @@ Here is what was used to develop this plugin:
 - Visual Studio 2022 with
    - Desktop Development with C++
    - Game Development with C++
-   - To compile the `_vc150` Wwise projects (required for UE4 v4.27) make sure to install
+   - To compile the `_vc150` Wwise projects make sure to install
       - MSVC v141 -VS 2017 C++ x64/x86 build tools
       - C++ ATL for v141 build tools
       - C++ MFC for v141 build tools
-   - To compile the `_vc160` Wwise projects (required for Wwise Authoring Tool 2021.1.10) make sure to install
+   - To compile the `_vc160` Wwise projects make sure to install
       - MSVC v142 - VS 2019 C++ x64/x86 build tools
       - C++ v14.29 (16.11) ATL for v142 build tools
       - C++ v14.29 (16.11) MFC for v142 build tools
@@ -90,10 +102,15 @@ In order for changes in the plugin code to take effect in the Wwise authoring to
 * build with `Release` configuration
 
 In order for changes in the plugin code to take effect in UE4 
-* open `Jack_Windows_vc150_static.sln`
+* open `Jack_Windows_vc150_static.sln` (or `_vc160`, depending on the UE4 compiler settings)
 * build with `Profile` configuratrion
 * copy the compiled files to the appropriate place in the UE4 project. Refer to the helper file `additional_artifacts_ue4.json` for an example of valid paths. For convenience it is also possible to change this file to suit your needs and use the Wwise development tools to copy the files (e.g. `python.exe '..\..\Wwise 2021.1.10.7883\Scripts\Build\Plugins\wp.py' package -c -f .\additional_artifacts_ue4.json -v 2022.0.0.1 Windows_vc150`)
 * build the UE4 project
+
+## Wwise Authoring Tool
+
+Do **not** assign the Jack Sink device to the Master Audio Bus (this might cause the Jack Server to crash because the Authoring tool will want to open a new jack client).
+Instead, create a new bus (e.g. with the name JackBus) and assign a child Audio Bus which can then be setup with a Ambisonics 5th order configuration.
 
 ## JackSink Wwise Plugin Development Notes
 
