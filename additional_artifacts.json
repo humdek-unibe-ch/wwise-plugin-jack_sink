@@ -15,17 +15,21 @@
     "Windows_vc160": [
         {
             "SDK/Win32_vc160/Debug/lib": ["thirdParty/jack/win32/libjack.lib"],
+            "SDK/x64_vc160/Debug/lib": ["thirdParty/jack/x64/libjack.lib"],
+            "SDK/Win32_vc160/Profile/lib": ["thirdParty/jack/win32/libjack.lib"],
+            "SDK/x64_vc160/Profile/lib": ["thirdParty/jack/x64/libjack.lib"],
             "SDK/Win32_vc160/Release/lib": ["thirdParty/jack/win32/libjack.lib"],
-            "SDK/x64_vc160/Release/lib": ["thirdParty/jack/x64/libjack64.lib"],
-            "SDK/x64_vc160/Debug/lib": ["thirdParty/jack/x64/libjack64.lib"]
+            "SDK/x64_vc160/Release/lib": ["thirdParty/jack/x64/libjack.lib"]
         }
     ],
     "Windows_vc150": [
         {
             "SDK/Win32_vc150/Debug/lib": ["thirdParty/jack/win32/libjack.lib"],
+            "SDK/x64_vc150/Debug/lib": ["thirdParty/jack/x64/libjack.lib"],
+            "SDK/Win32_vc150/Profile/lib": ["thirdParty/jack/win32/libjack.lib"],
+            "SDK/x64_vc150/Profile/lib": ["thirdParty/jack/x64/libjack.lib"],
             "SDK/Win32_vc150/Release/lib": ["thirdParty/jack/win32/libjack.lib"],
-            "SDK/x64_vc150/Release/lib": ["thirdParty/jack/x64/libjack64.lib"],
-            "SDK/x64_vc150/Debug/lib": ["thirdParty/jack/x64/libjack64.lib"]
+            "SDK/x64_vc150/Release/lib": ["thirdParty/jack/x64/libjack.lib"]
         }
     ]
 
