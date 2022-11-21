@@ -89,10 +89,15 @@ Here is what was used to develop this plugin:
       - MSVC v142 - VS 2019 C++ x64/x86 build tools
       - C++ v14.29 (16.11) ATL for v142 build tools
       - C++ v14.29 (16.11) MFC for v142 build tools
+   - To compile the `_vc170` Wwise projects, make sure to install
+      - MSVC v143 - VS 2022 C++ x64/x86 build tools
+      - C++ ATL for latest v143 build tools
+      - C++ MFC for latest v143 build tools
 - Unreal Engine v4.27.2
 
 **Important** It is possible to compile all the projects in Visual Studio 2022.
-I never converted the project files and left them in their corresponding version (`_vc150`: Visual Studio 2017, `_vc160`: Visual Studio 2019), something I would recommend keeping this way in order to preserve the manual changes that were necessary to correctly link the jackaudio library.
+I never converted the project files and left them in their corresponding version (`_vc150`: Visual Studio 2017, `_vc160`: Visual Studio 2019, `_vc170`: Visual Studio 2022), something I would recommend keeping this way in order to preserve the manual changes that were necessary to correctly link the jackaudio library.
+The version association ist described [here](https://www.audiokinetic.com/library/edge/?source=SDK&id=reference_platform.html).
 
 In order for changes in the plugin code to take effect in the Wwise authoring tool
 * make sure to close the Wwise Authoring tool (if a build fails with an error of a missing Jack.dll file a likely reason is that a still open Wwise Authoring tool locked the Jack.dll file and the build process was unable to overwrite the old dll with the new one)
@@ -134,10 +139,8 @@ Here is a short version of how to create and configure a plugin for Windows:
 ### Link JACK2 library to Wwise Plugin
 
 * Download and install JACK2
-* Add the library folder path (e.g. `C:/Program Files/JACK2/lib32`) and the include folder path (e.g `C:/Program Files/JACK2/include`) as well as the library name (e.g. `libjack`) to the file `PremakePlugin.lua`
-* Run the premake developer script (see above). Unfortunately, it is not possible to setup different library links for x64 and win32 versions. Hence, a manual editing of the libjack links is necessary. For all Win32 build configurations, change
-   * the library path for the `Jack` project in `Properties->Linker->General->Additional Dependencies` from `(...)/lib` to `(...)/lib32`.
-   * the library name for the `Jack` project in `Properties->Linker->Input->Additional Library Directories` from `libjack64.lib` to `libjack.lib`.
-   * the library path for the `JackSink` project in `Properties->Librarian->General->Additional Dependencies` from `(...)/lib` to `(...)/lib32`.
-   * the library name for the `Jack` project in `Properties->Librarian->General->Additional Library Directories` from `libjack64.lib` to `libjack.lib`.
+* Copy the `libjack[64].lib` and `libjack[64].dll` files to the plugin folder (e.g. to `thirdParty\jack\x86[_64]`).
+* Copy the `libjack` include files to the plugin folder (e.g. to `thirdParty\jack\include`).
+* Add the library folder path (e.g. `../thirdParty/jack/%{cfg.architecture}`) and the include folder path (e.g `../thirdParty/jack/include`) as well as the library name (e.g. `libjack`) to the file `PremakePlugin.lua`
+* Run the premake developer script (see above).
 * When building the different configurations, the plugin library file will automatically be copied to the target SDK location. Note that release builds will be copied to `Profile`. This can be changed in the Solution Properties.

@@ -11,7 +11,7 @@
     "tag": "Jack",
 
     // Description displayed in the Wwise Launcher for this bundle
-    "description": "A Custom sink to stream ambisonic audio channels to JACK2",
+    "description": "A Custom sink to stream Wwise audio channels to JACK2",
 
     // Vendor name displayed in the Wwise Launcher for this bundle
     "vendor": "Simon Maurer <simon.maurer@unibe.ch>",

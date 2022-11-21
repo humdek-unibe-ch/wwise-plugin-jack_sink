@@ -39,7 +39,7 @@ Plugin.authoring = {}
 -- SDK STATIC PLUGIN SECTION
 Plugin.sdk.static.includedirs = -- https://github.com/premake/premake-core/wiki/includedirs
 {
-    "C:/Program Files/JACK2/include"
+    "../thirdParty/jack/include"
 }
 Plugin.sdk.static.files = -- https://github.com/premake/premake-core/wiki/files
 {
@@ -54,12 +54,12 @@ Plugin.sdk.static.excludes = -- https://github.com/premake/premake-core/wiki/rem
 }
 Plugin.sdk.static.links = -- https://github.com/premake/premake-core/wiki/links
 {
-    "libjack64"
+    "libjack"
 }
 Plugin.sdk.static.libsuffix = "Sink"
 Plugin.sdk.static.libdirs = -- https://github.com/premake/premake-core/wiki/libdirs
 {
-    "C:/Program Files/JACK2/lib"
+    "../thirdParty/jack/%{cfg.architecture}"
 }
 Plugin.sdk.static.defines = -- https://github.com/premake/premake-core/wiki/defines
 {
@@ -68,7 +68,7 @@ Plugin.sdk.static.defines = -- https://github.com/premake/premake-core/wiki/defi
 -- SDK SHARED PLUGIN SECTION
 Plugin.sdk.shared.includedirs =
 {
-    "C:/Program Files/JACK2/include"
+    "../thirdParty/jack/include"
 }
 Plugin.sdk.shared.files =
 {
@@ -80,11 +80,11 @@ Plugin.sdk.shared.excludes =
 }
 Plugin.sdk.shared.links =
 {
-    "libjack64"
+    "libjack"
 }
 Plugin.sdk.shared.libdirs =
 {
-    "C:/Program Files/JACK2/lib"
+    "../thirdParty/jack/%{cfg.architecture}"
 }
 Plugin.sdk.shared.defines =
 {
@@ -93,7 +93,7 @@ Plugin.sdk.shared.defines =
 -- AUTHORING PLUGIN SECTION
 Plugin.authoring.includedirs =
 {
-    "C:/Program Files/JACK2/include"
+    "../thirdParty/jack/include"
 }
 Plugin.authoring.files =
 {
@@ -110,11 +110,11 @@ Plugin.authoring.excludes =
 }
 Plugin.authoring.links =
 {
-    "libjack64"
+    "libjack"
 }
 Plugin.authoring.libdirs =
 {
-    "C:/Program Files/JACK2/lib"
+    "../thirdParty/jack/%{cfg.architecture}"
 }
 Plugin.authoring.defines =
 {

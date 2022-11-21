@@ -12,24 +12,52 @@
             "Authoring/Data/Factory Assets/Jack": ["FactoryAssets/*"]
         }
     ],
+    "Windows_vc170": [
+        {
+            "SDK/Win32_vc170/Debug/lib": ["thirdParty/jack/x86/libjack.lib"],
+            "SDK/x64_vc170/Debug/lib": ["thirdParty/jack/x86_64/libjack.lib"],
+            "SDK/Win32_vc170/Profile/lib": ["thirdParty/jack/x86/libjack.lib"],
+            "SDK/x64_vc170/Profile/lib": ["thirdParty/jack/x86_64/libjack.lib"],
+            "SDK/Win32_vc170/Release/lib": ["thirdParty/jack/x86/libjack.lib"],
+            "SDK/x64_vc170/Release/lib": ["thirdParty/jack/x86_64/libjack.lib"],
+            "SDK/Win32_vc170/Debug/bin": ["thirdParty/jack/x86/libjack.dll"],
+            "SDK/x64_vc170/Debug/bin": ["thirdParty/jack/x86_64/libjack.dll"],
+            "SDK/Win32_vc170/Profile/bin": ["thirdParty/jack/x86/libjack.dll"],
+            "SDK/x64_vc170/Profile/bin": ["thirdParty/jack/x86_64/libjack.dll"],
+            "SDK/Win32_vc170/Release/bin": ["thirdParty/jack/x86/libjack.dll"],
+            "SDK/x64_vc170/Release/bin": ["thirdParty/jack/x86_64/libjack.dll"]
+        }
+    ],
     "Windows_vc160": [
         {
-            "SDK/Win32_vc160/Debug/lib": ["thirdParty/jack/win32/libjack.lib"],
-            "SDK/x64_vc160/Debug/lib": ["thirdParty/jack/x64/libjack.lib"],
-            "SDK/Win32_vc160/Profile/lib": ["thirdParty/jack/win32/libjack.lib"],
-            "SDK/x64_vc160/Profile/lib": ["thirdParty/jack/x64/libjack.lib"],
-            "SDK/Win32_vc160/Release/lib": ["thirdParty/jack/win32/libjack.lib"],
-            "SDK/x64_vc160/Release/lib": ["thirdParty/jack/x64/libjack.lib"]
+            "SDK/Win32_vc160/Debug/lib": ["thirdParty/jack/x86/libjack.lib"],
+            "SDK/x64_vc160/Debug/lib": ["thirdParty/jack/x86_64/libjack.lib"],
+            "SDK/Win32_vc160/Profile/lib": ["thirdParty/jack/x86/libjack.lib"],
+            "SDK/x64_vc160/Profile/lib": ["thirdParty/jack/x86_64/libjack.lib"],
+            "SDK/Win32_vc160/Release/lib": ["thirdParty/jack/x86/libjack.lib"],
+            "SDK/x64_vc160/Release/lib": ["thirdParty/jack/x86_64/libjack.lib"],
+            "SDK/Win32_vc160/Debug/bin": ["thirdParty/jack/x86/libjack.dll"],
+            "SDK/x64_vc160/Debug/bin": ["thirdParty/jack/x86_64/libjack.dll"],
+            "SDK/Win32_vc160/Profile/bin": ["thirdParty/jack/x86/libjack.dll"],
+            "SDK/x64_vc160/Profile/bin": ["thirdParty/jack/x86_64/libjack.dll"],
+            "SDK/Win32_vc160/Release/bin": ["thirdParty/jack/x86/libjack.dll"],
+            "SDK/x64_vc160/Release/bin": ["thirdParty/jack/x86_64/libjack.dll"]
         }
     ],
     "Windows_vc150": [
         {
-            "SDK/Win32_vc150/Debug/lib": ["thirdParty/jack/win32/libjack.lib"],
-            "SDK/x64_vc150/Debug/lib": ["thirdParty/jack/x64/libjack.lib"],
-            "SDK/Win32_vc150/Profile/lib": ["thirdParty/jack/win32/libjack.lib"],
-            "SDK/x64_vc150/Profile/lib": ["thirdParty/jack/x64/libjack.lib"],
-            "SDK/Win32_vc150/Release/lib": ["thirdParty/jack/win32/libjack.lib"],
-            "SDK/x64_vc150/Release/lib": ["thirdParty/jack/x64/libjack.lib"]
+            "SDK/Win32_vc150/Debug/lib": ["thirdParty/jack/x86/libjack.lib"],
+            "SDK/x64_vc150/Debug/lib": ["thirdParty/jack/x86_64/libjack.lib"],
+            "SDK/Win32_vc150/Profile/lib": ["thirdParty/jack/x86/libjack.lib"],
+            "SDK/x64_vc150/Profile/lib": ["thirdParty/jack/x86_64/libjack.lib"],
+            "SDK/Win32_vc150/Release/lib": ["thirdParty/jack/x86/libjack.lib"],
+            "SDK/x64_vc150/Release/lib": ["thirdParty/jack/x86_64/libjack.lib"],
+            "SDK/Win32_vc150/Debug/bin": ["thirdParty/jack/x86/libjack.dll"],
+            "SDK/x64_vc150/Debug/bin": ["thirdParty/jack/x86_64/libjack.dll"],
+            "SDK/Win32_vc150/Profile/bin": ["thirdParty/jack/x86/libjack.dll"],
+            "SDK/x64_vc150/Profile/bin": ["thirdParty/jack/x86_64/libjack.dll"],
+            "SDK/Win32_vc150/Release/bin": ["thirdParty/jack/x86/libjack.dll"],
+            "SDK/x64_vc150/Release/bin": ["thirdParty/jack/x86_64/libjack.dll"]
         }
     ]
 

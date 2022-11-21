@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32825.248
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 15
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jack", "WwisePlugin\Jack_Authoring_Windows_vc150.vcxproj", "{E0929D23-1443-2D05-3903-D2B001A86DCF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7518292B-4BAB-9350-1A54-3D5120860E33} = {7518292B-4BAB-9350-1A54-3D5120860E33}
@@ -37,8 +35,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {64DFEFC1-9F2B-4BE7-9CFE-24669F833632}
 	EndGlobalSection
 EndGlobal

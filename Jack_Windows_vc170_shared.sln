@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Jack", "SoundEnginePlugin\Jack_Windows_vc170_shared.vcxproj", "{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D} = {CF3D1DA3-B153-14FD-6D0E-18341197742D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JackSink", "SoundEnginePlugin\Jack_Windows_vc170_static.vcxproj", "{CF3D1DA3-B153-14FD-6D0E-18341197742D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Profile_EnableAsserts|Win32 = Profile_EnableAsserts|Win32
+		Profile_EnableAsserts|x64 = Profile_EnableAsserts|x64
+		Profile|Win32 = Profile|Win32
+		Profile|x64 = Profile|x64
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Debug|Win32.Build.0 = Debug|Win32
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Debug|x64.ActiveCfg = Debug|x64
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Debug|x64.Build.0 = Debug|x64
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Profile_EnableAsserts|Win32.ActiveCfg = Profile_EnableAsserts|Win32
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Profile_EnableAsserts|Win32.Build.0 = Profile_EnableAsserts|Win32
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Profile_EnableAsserts|x64.ActiveCfg = Profile_EnableAsserts|x64
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Profile_EnableAsserts|x64.Build.0 = Profile_EnableAsserts|x64
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Profile|Win32.ActiveCfg = Profile|Win32
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Profile|Win32.Build.0 = Profile|Win32
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Profile|x64.ActiveCfg = Profile|x64
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Profile|x64.Build.0 = Profile|x64
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Release|Win32.ActiveCfg = Release|Win32
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Release|Win32.Build.0 = Release|Win32
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Release|x64.ActiveCfg = Release|x64
+		{CDA5C971-7F48-06CB-2AA9-6484BF522C7F}.Release|x64.Build.0 = Release|x64
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Debug|Win32.ActiveCfg = Debug(StaticCRT)|Win32
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Debug|Win32.Build.0 = Debug(StaticCRT)|Win32
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Debug|x64.ActiveCfg = Debug(StaticCRT)|x64
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Debug|x64.Build.0 = Debug(StaticCRT)|x64
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Profile_EnableAsserts|Win32.ActiveCfg = Profile(StaticCRT)_EnableAsserts|Win32
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Profile_EnableAsserts|Win32.Build.0 = Profile(StaticCRT)_EnableAsserts|Win32
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Profile_EnableAsserts|x64.ActiveCfg = Profile(StaticCRT)_EnableAsserts|x64
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Profile_EnableAsserts|x64.Build.0 = Profile(StaticCRT)_EnableAsserts|x64
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Profile|Win32.ActiveCfg = Profile(StaticCRT)|Win32
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Profile|Win32.Build.0 = Profile(StaticCRT)|Win32
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Profile|x64.ActiveCfg = Profile(StaticCRT)|x64
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Profile|x64.Build.0 = Profile(StaticCRT)|x64
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Release|Win32.ActiveCfg = Release(StaticCRT)|Win32
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Release|Win32.Build.0 = Release(StaticCRT)|Win32
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Release|x64.ActiveCfg = Release(StaticCRT)|x64
+		{CF3D1DA3-B153-14FD-6D0E-18341197742D}.Release|x64.Build.0 = Release(StaticCRT)|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
