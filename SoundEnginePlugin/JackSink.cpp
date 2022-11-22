@@ -51,13 +51,24 @@ JackSink::JackSink()
     , m_pContext(nullptr)
     , m_bStarved(false)
     , m_bDataReady(false)
+    , channelCount(0)
+    , jackNFrames(0)
+    , maxNFrames(0)
+    , minNFrames(0)
+    , wwiseNFrames(0)
+    , writeFrameCount(0)
+    , readFrameCount(0)
     , rbFrameCount(0)
     , needCount(0)
     , rb(nullptr)
     , client(nullptr)
+    , onJackNFramesSet(nullptr)
 {
     for (AkUInt32 i = 0; i < DEFAULT_DATA_SIZE; i++) {
         this->silence[i] = 0;
+    }
+    for (AkUInt32 i = 0; i < JACK_SINK_MAX_PORT_COUNT; i++) {
+        this->ports[i] = nullptr;
     }
 }
 
@@ -163,7 +174,13 @@ AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginC
         return AK_Fail;
     }
 
-    this->client = jack_client_open(this->m_pParams->NonRTPC.jcName, JackNullOption, &status);
+    HMODULE dll = LoadLibrary(L"libjack64.dll");
+    if (dll == NULL) {
+        AKASSERT(!"No JACKaudio library installed");
+        return AK_Fail;
+    }
+
+    this->client = jack_client_open(this->m_pParams->NonRTPC.jcName, JackNoStartServer, &status);
     if (client == nullptr) {
         return AK_Fail;
     }
@@ -235,29 +252,29 @@ AKRESULT JackSink::Term(AK::IAkPluginMemAlloc* in_pAllocator)
 {
     if (this->client != nullptr) {
         jack_deactivate(this->client);
-    }
 
 #ifdef USE_MY_CUSTOM_DEBUG_LOG
-    this->writeLog("client deactivated");
+        this->writeLog("client deactivated");
 #endif
+        for (unsigned int i = 0; i < this->channelCount; i++) {
+            jack_port_unregister(this->client, this->ports[i]);
+        }
 
-    for (unsigned int i = 0; i < this->channelCount; i++) {
-        jack_port_unregister(this->client, this->ports[i]);
+        jack_client_close(this->client);
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+        this->writeLog("client closed");
+#endif
     }
+
 
     if (this->rb != nullptr) {
         jack_ringbuffer_free(this->rb);
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+        this->writeLog("ports unregistered");
+#endif
     }
-
-#ifdef USE_MY_CUSTOM_DEBUG_LOG
-    this->writeLog("ports unregistered");
-#endif
-
-    jack_client_close(this->client);
-
-#ifdef USE_MY_CUSTOM_DEBUG_LOG
-    this->writeLog("client closed");
-#endif
 
     AKPLATFORM::AkDestroyEvent(this->onJackNFramesSet);
     AK_PLUGIN_DELETE(in_pAllocator, this);
@@ -278,7 +295,9 @@ AKRESULT JackSink::Reset()
     this->writeLog("|||||||||||||||||||||||||");
 #endif
 
-    jack_ringbuffer_reset(this->rb);
+    if (this->rb != nullptr) {
+        jack_ringbuffer_reset(this->rb);
+    }
     return AK_Success;
 }
 

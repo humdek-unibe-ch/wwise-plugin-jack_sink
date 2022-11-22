@@ -36,40 +36,35 @@ As a consequence, the plugin must be compiled (precompiled targets are provided 
    * navigate to `Unreal`
    * download offline integration files (this item can be found in the dropdown menu next to the title "Recent Unreal Engine Projects")
    * choose an unreal project and select "integrate using offline files"
-* Link the AkModule to the UE4 game as described [here](https://www.audiokinetic.com/library/edge/?source=UE4&id=using_cpp.html)
+* For C++ Projects: Add `AkAudio` to `PublicDependencyModuleNames` in the Unreal Project build file (`Unreal Project Name.Build.cs`) as described [here](https://www.audiokinetic.com/library/edge/?source=UE4&id=using_cpp.html).
 * Lauch UE4 project
    * Open "Edit -> Project Settings"
       * in "Wwise -> Integration Settigs" enable "Sound Data -> Use Event-Based Packaging"
       * in "Wwise -> User Settings" enable "WAAPI -> Auto Connect to WAAPI"
       * Close the settings window
    * Enable "Window -> Waapi Picker" to modify Wwise content directly from UE4
-   * For C++ Projects: Add `AkAudio` to `PublicDependencyModuleNames` in the Unreal Project build file (`Unreal Project Name.Build.cs`)
-
-### Manually Install Jack Plugin Files
-
-For a minimal Setup copy the following files:
-
-* Authoring/x64/Release/bin/Plugins/* -> Wwise Installation Folder/Authoring/x64/Release/bin/Plugins/.
-* SDK/x64_vc160/Release/bin/* -> Wwise Installation Folder/SDK/x64_vc160/Release/bin/.
-* SDK/x64_vc160/Release/lib/* -> Wwise Installation Folder/SDK/x64_vc160/Release/lib/.
-* SDK/include/AK/Plugin/* -> Unreal Project Folder/Plugins/Wwise/ThirdParty/include/AK/Plugin/.
-* SDK/x64_vc160/Profile/bin/* -> Unreal Project Folder/Plugins/Wwise/ThirdParty/x64_vc160/Profile/bin/.
-* SDK/x64_vc160/Profile/lib/* -> Unreal Project Folder/Plugins/Wwise/ThirdParty/x64_vc160/Profile/lib/.
-
-Depending on the UE4 compiler settings `vc150` (VS 2017) targets need to be copied instead of `vc160` (VS 2019).
 
 ### Register the Jack Wwise Plugin in UE4
 
+**For Wwise SDK version 2021.1.10.7883**
+
 Modify the `AkAudioDevice` module to incorporate the JackSink:
 
-* Add the JackSink factory header (`#include <AK/Plugin/JackSinkFactory.h>`) to `AkAudioDevice.cpp` (around line 90)
 * Link the JackSink library by adding `JackSink` to the `AKLibs` list in `AkAudio.Build.cs` (around line 158)
-* Link Jack2 library by adding `libjack64` to the `AKLibs` list in `AkAudio.Build.cs` (around line 158)
-* Compile the UE4 project (this can take several minutes to complete when doing it the first time)
-* In the Unreal project settings (`Edit/Project Settings ...`)
-   - set the main output of the game engine to the Jack sink (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Audio Device Shareset` to `Jack`).
-   - set the channel count (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Number of Channels` to `36`). If this is set to 0 the Jack Sink will terminate immediately after its initialization.
-   - set the channel config type (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Channel Config Type` to `Ambisonic`).
+* Link Jack2 library by adding `libjack` to the list returned by `GetAdditionalWwiseLibs()` in `AkAudio_Windows.Build.cs` (around line 59)
+* Add the JackSink factory header (`#include <AK/Plugin/JackSinkFactory.h>`) to `AkAudioDevice.cpp` (around line 90)
+
+Note that the toolchain version is defined in the function `GetVisualStudioVersion()` in `AkAudio_Windows.Build.cs` (around line 114).
+It is dependent on the version of visual studio but ignores the configuration setting in Unreal.
+I recommend to fix this to `vc160` and install the approptiate toolchain (see [Versions for Building](#versions-for-building)).
+   
+**[Not Working] For Wwise SDK version 2022.1.0.8070:**
+
+Modify some content of the `WwiseSoundEngine_2022_1` folder to incorporate the JackSink:
+
+* Add the JackSink factory header (`#include <AK/Plugin/JackSinkFactory.h>`) to `<Unreal Project Name>/Plugins/Wwise/Source/WwiseSoundEngine_2022_1/Public/AkInclude.h` (around line 42)
+* Link the JackSink library by adding `JackSink` to the `AKLibs` list in `<Unreal Project Name>/Plugins/Wwise/Source/WwiseSoundEngine_2022_1/WwiseSoundEngine_2022_1.Build.cs` (around line 36)
+* Link Jack2 library by adding `libjack` to the `AKLibs` list in `<Unreal Project Name>/Plugins/Wwise/Source/WwiseSoundEngine_2022_1/WwiseSoundEngine_2022_1.Build.cs` (around line 36)
 
 ### Versions for Building
 
@@ -89,15 +84,10 @@ Here is what was used to develop this plugin:
       - MSVC v142 - VS 2019 C++ x64/x86 build tools
       - C++ v14.29 (16.11) ATL for v142 build tools
       - C++ v14.29 (16.11) MFC for v142 build tools
-   - To compile the `_vc170` Wwise projects, make sure to install
-      - MSVC v143 - VS 2022 C++ x64/x86 build tools
-      - C++ ATL for latest v143 build tools
-      - C++ MFC for latest v143 build tools
 - Unreal Engine v4.27.2
 
 **Important** It is possible to compile all the projects in Visual Studio 2022.
-I never converted the project files and left them in their corresponding version (`_vc150`: Visual Studio 2017, `_vc160`: Visual Studio 2019, `_vc170`: Visual Studio 2022), something I would recommend keeping this way in order to preserve the manual changes that were necessary to correctly link the jackaudio library.
-The version association ist described [here](https://www.audiokinetic.com/library/edge/?source=SDK&id=reference_platform.html).
+I never converted the project files and left them in their corresponding version (`_vc150`: Visual Studio 2017, `_vc160`: Visual Studio 2019, `_vc170`: Visual Studio 2022) which worked fine for me.
 
 In order for changes in the plugin code to take effect in the Wwise authoring tool
 * make sure to close the Wwise Authoring tool (if a build fails with an error of a missing Jack.dll file a likely reason is that a still open Wwise Authoring tool locked the Jack.dll file and the build process was unable to overwrite the old dll with the new one)
@@ -107,10 +97,32 @@ In order for changes in the plugin code to take effect in the Wwise authoring to
 * build with `Release` configuration
 
 In order for changes in the plugin code to take effect in UE4 
-* open `Jack_Windows_vc150_static.sln` (or `_vc160`, depending on the UE4 compiler settings)
+* open `Jack_Windows_vc160_static.sln` (or `_vc150`, depending on the build script `AkAudio_Windows.Build.cs` and/or the Visual Studio version)
 * build with `Profile` configuration
-* copy the compiled files to the appropriate place in the UE4 project. Refer to the helper file `additional_artifacts_ue4.json` for an example of valid paths. For convenience, it is also possible to change this file to suit your needs and use the Wwise development tools to copy the files (e.g. `python.exe '..\..\Wwise 2021.1.10.7883\Scripts\Build\Plugins\wp.py' package -c -f .\additional_artifacts_ue4.json -v 2022.0.0.1 Windows_vc150`)
+* copy the compiled files to the appropriate place in the UE4 project. Refer to the helper file `additional_artifacts_ue4.json` for an example of valid paths. For convenience, it is also possible to change this file to suit your needs and use the Wwise development tools to copy the files (e.g. `python.exe '..\..\Wwise 2021.1.10.7883\Scripts\Build\Plugins\wp.py' package -c -f .\additional_artifacts_ue4.json -v 2022.0.0.1 Windows_vc160`)
 * build the UE4 project
+
+### Manually Install Jack Plugin Files
+
+For a minimal Setup copy the following files:
+
+* Authoring/x64/Release/bin/Plugins/* -> Wwise Installation Folder/Authoring/x64/Release/bin/Plugins/.
+* SDK/x64_vc160/Release/bin/* -> Wwise Installation Folder/SDK/x64_vc160/Release/bin/.
+* SDK/x64_vc160/Release/lib/* -> Wwise Installation Folder/SDK/x64_vc160/Release/lib/.
+* SDK/include/AK/Plugin/* -> Unreal Project Folder/Plugins/Wwise/ThirdParty/include/AK/Plugin/.
+* SDK/x64_vc160/Profile/bin/* -> Unreal Project Folder/Plugins/Wwise/ThirdParty/x64_vc160/Profile/bin/.
+* SDK/x64_vc160/Profile/lib/* -> Unreal Project Folder/Plugins/Wwise/ThirdParty/x64_vc160/Profile/lib/.
+
+Depending on the UE4 compiler settings `vc150` (VS 2017) targets need to be copied instead of `vc160` (VS 2019).
+
+### Configure UE4 to Play 5th Order Ambisonic Sound through JACK
+
+Compile the UE4 project (this can take several minutes to complete when doing it the first time).
+
+In the Unreal project settings (`Edit/Project Settings ...`)
+* set the main output of the game engine to the Jack sink (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Audio Device Shareset` to `Jack`).
+* set the channel count (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Number of Channels` to `36`). If this is set to 0 the Jack Sink will terminate immediately after its initialization.
+* set the channel config type (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Channel Config Type` to `Ambisonic`).
 
 ## Wwise Authoring Tool
 
