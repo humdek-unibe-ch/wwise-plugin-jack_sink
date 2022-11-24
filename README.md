@@ -65,7 +65,7 @@ The next step consists of registering Wwise and the JackSink plugin in Unreal.
 This requires some changes in the build scripts as well as some cpp files.
 The following only holds for the Wwise SDK version `2021.1.10.7883`:
 
-* Add `AkAudio` to `PublicDependencyModuleNames` in the Unreal Project build file (`Unreal Project Name.Build.cs`) as described [here](https://www.audiokinetic.com/library/edge/?source=UE4&id=using_cpp.html) and compile the project.
+* Add `AkAudio` to `PublicDependencyModuleNames` in the Unreal Project build file (`Unreal Project Name.Build.cs`) as described [here](https://www.audiokinetic.com/library/edge/?source=UE4&id=using_cpp.html)
 * Modify the `AkAudioDevice` module to incorporate the JackSink:
    * Link the JackSink library by adding `JackSink` to the `AKLibs` list in `AkAudio.Build.cs` (around line 158)
    * Link Jack2 library by adding `libjack` to the list returned by `GetAdditionalWwiseLibs()` in `AkAudio_Windows.Build.cs` (around line 59)
@@ -88,7 +88,7 @@ The following project setting changes are recommended in the Unreal editor:
 
 ### Configure a Wwise Bus to Play 5th Order Ambisonic Sound through JACK
 
-In order for Wwise to play through the JackSink a corresponding device needs to be crated:
+In order for Wwise to play through the JackSink a corresponding device needs to be created:
 
 * Launch the Wwise authoring tool (this can either be done through the Audiokinetic launcher or by opening the Wwise project created during the Unreal Wwise integration)
 * Open the design layout (either by pressing `F5` or through the menu `Layouts->Designer`)
