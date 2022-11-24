@@ -62,9 +62,9 @@ I recommend to fix this to `vc160` and install the approptiate toolchain (see [V
 
 Modify some content of the `WwiseSoundEngine_2022_1` folder to incorporate the JackSink:
 
-* Add the JackSink factory header (`#include <AK/Plugin/JackSinkFactory.h>`) to `<Unreal Project Name>/Plugins/Wwise/Source/WwiseSoundEngine_2022_1/Public/AkInclude.h` (around line 42)
+* Add the JackSink factory header (`#include <AK/Plugin/JackSinkFactory.h>`) to `<Unreal Project Name>/Plugins/Wwise/Source/WwiseSoundEngine_2022_1/Private/Wwise/WwiseSoundEngineModule_2022_1.cpp` (around line 29)
 * Link the JackSink library by adding `JackSink` to the `AKLibs` list in `<Unreal Project Name>/Plugins/Wwise/Source/WwiseSoundEngine_2022_1/WwiseSoundEngine_2022_1.Build.cs` (around line 36)
-* Link Jack2 library by adding `libjack` to the `AKLibs` list in `<Unreal Project Name>/Plugins/Wwise/Source/WwiseSoundEngine_2022_1/WwiseSoundEngine_2022_1.Build.cs` (around line 36)
+* Link Jack2 library by adding `libjack` to the list returned by `GetAdditionalWwiseLibs()` in `<Unreal Project Name>/Plugins/Wwise/Source/WwiseSoundEngine_2022_1/WwiseUEPlatform_Windows.Build.cs` (around line 54)
 
 ### Versions for Building
 
@@ -72,7 +72,8 @@ Unfortunately, it is quite a mess to cope with all the different versions of Wwi
 Here is what was used to develop this plugin:
 
 - Wwise SDK Version `2021.1.10.7883`.
-  At the time of development, a newer 2022 version was available but flagged as beta (in the newer version the [workflow with event-based packaging was marked as deprecated](https://www.audiokinetic.com/library/2022.1.0_7985/?source=UE4&id=using_workflow.html))
+  ~~At the time of development, a newer 2022 version was available but flagged as beta (in the newer version the [workflow with event-based packaging was marked as deprecated](https://www.audiokinetic.com/library/2022.1.0_7985/?source=UE4&id=using_workflow.html))~~
+  The version 2022 is now released as stable version but there are major changes with respect to the unreal integration and I have not yet managed to document the necessary steps for a successful integration.
 - Visual Studio 2022 with
    - Desktop Development with C++
    - Game Development with C++
