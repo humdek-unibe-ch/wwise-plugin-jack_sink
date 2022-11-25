@@ -14,12 +14,12 @@
     ],
     "Windows_vc170": [
         {
-            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/Win32_vc170/Debug/lib": ["../../Wwise 2021.1.10.7883/SDK/Win32_vc160/Debug/lib/JackSink.lib", "thirdParty/jack/x86/libjack.lib"],
-            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/x64_vc170/Debug/lib": ["../../Wwise 2021.1.10.7883/SDK/x64_vc160/Debug/lib/JackSink.lib", "thirdParty/jack/x86_64/libjack.lib"],
-            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/Win32_vc170/Profile/lib": ["../../Wwise 2021.1.10.7883/SDK/Win32_vc160/Profile/lib/JackSink.lib", "thirdParty/jack/x86/libjack.lib"],
-            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/x64_vc170/Profile/lib": ["../../Wwise 2021.1.10.7883/SDK/x64_vc160/Profile/lib/JackSink.lib", "thirdParty/jack/x86_64/libjack.lib"],
-            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/Win32_vc170/Release/lib": ["../../Wwise 2021.1.10.7883/SDK/Win32_vc160/Release/lib/JackSink.lib", "thirdParty/jack/x86/libjack.lib"],
-            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/x64_vc170/Release/lib": ["../../Wwise 2021.1.10.7883/SDK/x64_vc160/Release/lib/JackSink.lib", "thirdParty/jack/x86_64/libjack.lib"]
+            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/Win32_vc170/Debug/lib": ["../../Wwise 2021.1.10.7883/SDK/Win32_vc170/Debug/lib/JackSink.lib", "thirdParty/jack/x86/libjack.lib"],
+            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/x64_vc170/Debug/lib": ["../../Wwise 2021.1.10.7883/SDK/x64_vc170/Debug/lib/JackSink.lib", "thirdParty/jack/x86_64/libjack.lib"],
+            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/Win32_vc170/Profile/lib": ["../../Wwise 2021.1.10.7883/SDK/Win32_vc170/Profile/lib/JackSink.lib", "thirdParty/jack/x86/libjack.lib"],
+            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/x64_vc170/Profile/lib": ["../../Wwise 2021.1.10.7883/SDK/x64_vc170/Profile/lib/JackSink.lib", "thirdParty/jack/x86_64/libjack.lib"],
+            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/Win32_vc170/Release/lib": ["../../Wwise 2021.1.10.7883/SDK/Win32_vc170/Release/lib/JackSink.lib", "thirdParty/jack/x86/libjack.lib"],
+            "../../03-Projekte/WwiseJack/Plugins/Wwise/ThirdParty/x64_vc170/Release/lib": ["../../Wwise 2021.1.10.7883/SDK/x64_vc170/Release/lib/JackSink.lib", "thirdParty/jack/x86_64/libjack.lib"]
         }
     ],
     "Windows_vc160": [

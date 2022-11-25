@@ -69,6 +69,7 @@ The following only holds for the Wwise SDK version `2021.1.10.7883`:
 * Modify the `AkAudioDevice` module to incorporate the JackSink:
    * Link the JackSink library by adding `JackSink` to the `AKLibs` list in `AkAudio.Build.cs` (around line 158)
    * Link Jack2 library by adding `libjack` to the list returned by `GetAdditionalWwiseLibs()` in `AkAudio_Windows.Build.cs` (around line 59)
+   * Mark the `libjack` DLLs as delay load by adding `PlatformPrefix == "x64" ? "libjack64.dll" : "libjack.dll"` to the list returned by `GetPublicDelayLoadDLLs()` in `AkAudio_Windows.Build.cs` (around line 79)
    * Add the JackSink factory header (`#include <AK/Plugin/JackSinkFactory.h>`) to `AkAudioDevice.cpp` (around line 90)
 
 Compile the UE4 project (this can take several minutes to complete when doing it the first time).
