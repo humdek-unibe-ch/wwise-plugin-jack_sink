@@ -30,6 +30,10 @@ the specific language governing permissions and limitations under the License.
 #include <AK/SoundEngine/Common/IAkPlugin.h>
 #include <AK/Plugin/PluginServices/AkFXParameterChangeHandler.h>
 
+#define JACK_SINK_MAX_PORT_COUNT 36
+#define JACK_SINK_CHANNEL_TYPE_AMBISONICS 0
+#define JACK_SINK_CHANNEL_TYPE_ANONYMOUS 1
+
 // Add parameters IDs here, those IDs should map to the AudioEnginePropertyID
 // attributes in the xml property definition.
 static const AkPluginParamID PARAM_JC_NAME_ID = 1;
@@ -37,7 +41,9 @@ static const AkPluginParamID PARAM_JC_OUT_PORT_PREFIX_ID = 2;
 static const AkPluginParamID PARAM_JT_NAME_ID = 3;
 static const AkPluginParamID PARAM_JT_IN_PORT_PREFIX_ID = 4;
 static const AkPluginParamID PARAM_JT_AUTO_CONNECT_ID = 5;
-static const AkUInt32 NUM_PARAMS = 5;
+static const AkPluginParamID PARAM_CHANNEL_COUNT_ID = 6;
+static const AkPluginParamID PARAM_CHANNEL_TYPE_ID = 7;
+static const AkUInt32 NUM_PARAMS = 6;
 
 struct JackRTPCParams
 {
@@ -50,6 +56,8 @@ struct JackNonRTPCParams
     char jtInPortPrefix[1000];
     char jtName[1000];
     bool jtAutoConnect;
+    AkUInt32 channelCount;
+    AkInt32 channelType;
 };
 
 struct JackSinkParams

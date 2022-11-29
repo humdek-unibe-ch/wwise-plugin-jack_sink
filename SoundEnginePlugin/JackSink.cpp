@@ -47,8 +47,6 @@ AK_IMPLEMENT_PLUGIN_FACTORY(JackSink, AkPluginTypeSink, JackConfig::CompanyID, J
 
 JackSink::JackSink()
     : m_pParams(nullptr)
-    , m_pAllocator(nullptr)
-    , m_pContext(nullptr)
     , m_bStarved(false)
     , m_bDataReady(false)
     , channelCount(0)
@@ -148,26 +146,53 @@ AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginC
     int rc;
     unsigned int i;
     char port_name[100];
+    char client_name[100];
     jack_status_t status;
     this->m_pParams = (JackSinkParams*)in_pParams;
-    this->m_pAllocator = in_pAllocator;
-    this->m_pContext = in_pCtx;
-    AkUniqueID node_uid = in_pCtx->GetAudioNodeID();
     AkUInt32 out_uOutputID;
     AkPluginID out_uDevicePlugin;
     in_pCtx->GetOutputID(out_uOutputID, out_uDevicePlugin);
 
-    this->channelCount = io_rFormat.GetNumChannels();
-    AKPLATFORM::AkCreateEvent(this->onJackNFramesSet);
-
 #ifdef USE_MY_CUSTOM_DEBUG_LOG
     this->writeLog("=================================================================================================");
     this->writeLog("IsPrimary: %d", in_pCtx->IsPrimary());
-    this->writeLog("node_uid: %d", node_uid);
+    this->writeLog("CanPostMonitorData: %d", in_pCtx->CanPostMonitorData());
+    this->writeLog("IsRenderingOffline: %d", in_pCtx->GlobalContext()->IsRenderingOffline());
+    this->writeLog("node_uid: %d", in_pCtx->GetAudioNodeID());
     this->writeLog("output_id: %d, output_plugin_id: %d", out_uOutputID, out_uDevicePlugin);
-    this->writeLog("ChannelCount: %d", this->channelCount);
-    this->writeLog("Params: %s, %s, %d, %s, %s", this->m_pParams->NonRTPC.jcName, this->m_pParams->NonRTPC.jcOutPortPrefix, this->m_pParams->NonRTPC.jtAutoConnect, this->m_pParams->NonRTPC.jtName, this->m_pParams->NonRTPC.jtInPortPrefix);
+    this->writeLog("Params: %s, %s, %d, %s, %s, %d, %d", this->m_pParams->NonRTPC.jcName, this->m_pParams->NonRTPC.jcOutPortPrefix,
+        this->m_pParams->NonRTPC.jtAutoConnect, this->m_pParams->NonRTPC.jtName, this->m_pParams->NonRTPC.jtInPortPrefix,
+        this->m_pParams->NonRTPC.channelCount, this->m_pParams->NonRTPC.channelType);
 #endif
+
+    if (io_rFormat.channelConfig.IsValid())
+    {
+        this->channelCount = io_rFormat.GetNumChannels();
+    }
+    else
+    {
+        this->channelCount = this->m_pParams->NonRTPC.channelCount;
+        if (this->m_pParams->NonRTPC.channelType == JACK_SINK_CHANNEL_TYPE_AMBISONICS)
+        {
+            io_rFormat.channelConfig.SetAmbisonic(this->channelCount);
+        }
+        else if (this->m_pParams->NonRTPC.channelType == JACK_SINK_CHANNEL_TYPE_ANONYMOUS)
+        {
+            io_rFormat.channelConfig.SetAnonymous(this->channelCount);
+        }
+        else
+        {
+            AKASSERT(!"Unknown channel configuration");
+            return AK_UnsupportedChannelConfig;
+        }
+    }
+
+#ifdef USE_MY_CUSTOM_DEBUG_LOG
+    this->writeLog("IsChannelConfigValid: %d", io_rFormat.channelConfig.IsValid());
+    this->writeLog("ChannelCount: %d", this->channelCount);
+#endif
+
+    AKPLATFORM::AkCreateEvent(this->onJackNFramesSet);
 
     if (this->channelCount == 0 || this->channelCount > JACK_SINK_MAX_PORT_COUNT) {
         AKASSERT(!"Invalid channel count");
@@ -180,7 +205,16 @@ AKRESULT JackSink::Init(AK::IAkPluginMemAlloc* in_pAllocator, AK::IAkSinkPluginC
         return AK_Fail;
     }
 
-    this->client = jack_client_open(this->m_pParams->NonRTPC.jcName, JackNoStartServer, &status);
+    if (in_pCtx->CanPostMonitorData())
+    {
+        sprintf(client_name, "%s (Authoring)", this->m_pParams->NonRTPC.jcName);
+    }
+    else
+    {
+        sprintf(client_name, "%s", this->m_pParams->NonRTPC.jcName);
+    }
+
+    this->client = jack_client_open(client_name, JackNoStartServer, &status);
     if (client == nullptr) {
         return AK_Fail;
     }

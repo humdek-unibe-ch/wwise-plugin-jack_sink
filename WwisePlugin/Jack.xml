@@ -57,6 +57,22 @@ for the documentation about the plugin xml format
 				<DefaultValue>input</DefaultValue>
 				<AudioEnginePropertyID>4</AudioEnginePropertyID>
 			</Property>
+			<Property Name="channelCount" Type="Uint32" DisplayName="Number of Channels" DisplayGroup="Output Settings">
+				<DefaultValue>36</DefaultValue>
+				<AudioEnginePropertyID>6</AudioEnginePropertyID>
+			</Property>
+			<Property Name="channelType" Type="int32" DisplayName="Channel Config Type" DisplayGroup="Output Settings">
+				<DefaultValue>0</DefaultValue>
+				<AudioEnginePropertyID>7</AudioEnginePropertyID>
+				<Restrictions>
+					<ValueRestriction>
+						<Enumeration Type="int32">
+							<Value DisplayName="Ambisonics">0</Value>
+							<Value DisplayName="Anonymous">1</Value>
+						</Enumeration>
+					</ValueRestriction>
+				</Restrictions>
+			</Property>
 		</Properties>
 	</SinkPlugin>
 </PluginModule>

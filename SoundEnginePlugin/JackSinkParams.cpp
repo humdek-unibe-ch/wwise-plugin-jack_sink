@@ -58,6 +58,8 @@ AKRESULT JackSinkParams::Init(AK::IAkPluginMemAlloc* in_pAllocator, const void* 
         sprintf(NonRTPC.jtName, "SceneRotator");
         sprintf(NonRTPC.jtInPortPrefix, "input");
         NonRTPC.jtAutoConnect = false;
+        NonRTPC.channelCount = JACK_SINK_MAX_PORT_COUNT;
+        NonRTPC.channelType = JACK_SINK_CHANNEL_TYPE_AMBISONICS;
         m_paramChangeHandler.SetAllParamChanges();
         return AK_Success;
     }
@@ -83,6 +85,8 @@ AKRESULT JackSinkParams::SetParamsBlock(const void* in_pParamsBlock, AkUInt32 in
     sprintf(NonRTPC.jtName, READBANKSTRING(pParamsBlock, in_ulBlockSize, len));
     sprintf(NonRTPC.jtInPortPrefix, READBANKSTRING(pParamsBlock, in_ulBlockSize, len));
     NonRTPC.jtAutoConnect = READBANKDATA(bool, pParamsBlock, in_ulBlockSize);
+    NonRTPC.channelCount = READBANKDATA(AkUInt32, pParamsBlock, in_ulBlockSize);
+    NonRTPC.channelType = READBANKDATA(AkInt32, pParamsBlock, in_ulBlockSize);
     CHECKBANKDATASIZE(in_ulBlockSize, eResult);
     m_paramChangeHandler.SetAllParamChanges();
 
@@ -115,6 +119,14 @@ AKRESULT JackSinkParams::SetParam(AkPluginParamID in_paramID, const void* in_pVa
     case PARAM_JT_IN_PORT_PREFIX_ID:
         sprintf(NonRTPC.jtInPortPrefix, (const char*)in_pValue);
         m_paramChangeHandler.SetParamChange(PARAM_JT_IN_PORT_PREFIX_ID);
+        break;
+    case PARAM_CHANNEL_COUNT_ID:
+        m_paramChangeHandler.SetParamChange(PARAM_CHANNEL_COUNT_ID);
+        NonRTPC.channelCount = *reinterpret_cast<const AkUInt32*>(in_pValue);
+        break;
+    case PARAM_CHANNEL_TYPE_ID:
+        m_paramChangeHandler.SetParamChange(PARAM_CHANNEL_TYPE_ID);
+        NonRTPC.channelType = *reinterpret_cast<const AkInt32*>(in_pValue);
         break;
     default:
         eResult = AK_InvalidParameter;

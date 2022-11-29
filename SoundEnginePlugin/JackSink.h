@@ -28,7 +28,6 @@ the specific language governing permissions and limitations under the License.
 #define JackSink_H
 
 #define DEFAULT_DATA_SIZE sizeof(AkReal32)
-#define JACK_SINK_MAX_PORT_COUNT 36
 //#define USE_MY_CUSTOM_DEBUG_LOG
 //#define USE_MY_CUSTOM_DEBUG_LOG_RT
 
@@ -85,8 +84,6 @@ private:
     static int setBufferSizeCallback(jack_nframes_t nframes, void* arg);
 
     JackSinkParams* m_pParams;
-    AK::IAkPluginMemAlloc* m_pAllocator;
-    AK::IAkSinkPluginContext* m_pContext;
     bool m_bStarved;
     bool m_bDataReady;
     jack_client_t* client;

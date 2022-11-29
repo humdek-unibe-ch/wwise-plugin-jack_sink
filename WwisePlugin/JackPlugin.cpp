@@ -43,6 +43,8 @@ bool JackPlugin::GetBankParameters(const GUID & in_guidPlatform, AK::Wwise::Plug
     in_dataWriter.WriteString(m_propertySet.GetString(in_guidPlatform, "jtName"));
     in_dataWriter.WriteString(m_propertySet.GetString(in_guidPlatform, "jtInPortPrefix"));
     in_dataWriter.WriteBool(m_propertySet.GetBool(in_guidPlatform, "jtAutoConnect"));
+    in_dataWriter.WriteUInt32(m_propertySet.GetUInt32(in_guidPlatform, "channelCount"));
+    in_dataWriter.WriteInt32(m_propertySet.GetInt32(in_guidPlatform, "channelType"));
 
     return true;
 }
