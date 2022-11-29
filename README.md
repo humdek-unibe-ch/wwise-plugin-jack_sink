@@ -95,28 +95,26 @@ In order for Wwise to play through the JackSink a corresponding device needs to 
 * Open the design layout (either by pressing `F5` or through the menu `Layouts->Designer`)
 * Open the `Audio` tab in the `Project Explorer`
 * Right-click `Audio Devices -> Default Work Unit` and create a new Jack device by selecting `New Child -> Jack`
-* Name the new device `Jack` (you can use a different name here but you will need to use this exact same name in the Unreal project settings later on)
-
-Do **not** assign the Jack Sink device to the Master Audio Bus (this might cause the Jack Server to crash because the authoring tool will want to open a new jack client).
-Instead, create a new bus and assign a child audio bus which can then be setup with an Ambisonics 5th order configuration:
-
-* Right-click `Master-Mixer Hierarchy -> Default Work Unit` and create a new audio bus by selecting `New Child -> Audio Bus`
-* Name the new bus `JackBus` (you can use a different name here)
-* Select the new bus and in `General Settings` set the `Audio Device` to `Jack` (or the corresponding name you used when creating the jack device)
-* Right-click the newly created bus and create a child audio bus by selecting `New Child -> Audio Bus`
-* Name the new bus `Ambisonics` (you can use a different name here)
-* Select the new bus and in `General Settings` set the `Bus Configuration` to `Ambisonics 5th order`
+* Name the new device `Jack` (you can use a different name here but you may need to use this exact same name in the Unreal project settings later on)
+* Select `Master-Mixer Hierarchy -> Default Work Unit -> Master Audio Bus` and select `Jack` (or the corresponding name you used when creating the jack device) as `Audio Device`
 * Save the changes
 
 ### Configure UE4 to Play 5th Order Ambisonic Sound through JACK
 
-In the Unreal project settings (`Edit/Project Settings ...`)
+You have several options of how to set this up.
+The recommended way is to leave the UE4 configuration as is and configure everything through the Wwise authoring tool.
+This means that everything played through the authoring tool uses the same audio path as when played through UE4.
+
+Alternatively, it is possible to set the output device and channel configuration within the Unreal project settings (`Edit/Project Settings ...`):
 
 * set the main output of the game engine to the Jack sink (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Audio Device Shareset` to `Jack`).
   Use the exact same name you defined when creating the Jack device in the Wwise authoring tool.
 * set the channel count (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Number of Channels` to `36`).
   If this is set to 0 the Jack Sink will terminate immediately after its initialization.
 * set the channel config type (e.g. set `Wwise/Windows/Common Settings/Main Output Settings/Channel Config Type` to `Ambisonic`).
+
+It is also possible to only set the channel configuration but leave the device selection to the Wwise authoring tool.
+This way Wwise will down-mix the Ambisonics signal to the corresponding device or leave it raw when router to Jack.
 
 ### Versions for Building
 
@@ -167,9 +165,7 @@ To get you started here are a few steps to set up the Wwise project for the [Goi
 * Download a free audio sample (e.g. [this](https://file-examples.com/wp-content/uploads/2017/11/file_example_WAV_10MG.wav) sample)
 * Right-click on `Actor-Mixer Hierarchy -> Default Work Unit` and select `Import Audio Files...` and add the sample file
 * Name the new file `Ambient` (you can use a different name here)
-* Select the new file and in `General Settings`
-   * set `Output Bus` to `Ambisonics` (or the corresponding name you used when creating the bus)
-   * in `Loop` select `Infinite`
+* Select the new file and in `General Settings` in `Loop` select `Infinite`
 * Right-click the new file and select `New Event -> Play` (use the suggested name)
 * Save the changes
 
