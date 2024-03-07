@@ -101,6 +101,9 @@ In order for Wwise to play through the JackSink a corresponding device needs to 
 * Select `Master-Mixer Hierarchy -> Default Work Unit -> Master Audio Bus` and select `Jack` (or the corresponding name you used when creating the jack device) as `Audio Device`
 * Save the changes
 
+> :warning: WARNING  
+> Make sure that the setting in the menu `Audio -> Main Mix Channel Configuration` is set o `Use Audio Device ShareSet`.
+
 ### Configure UE4 to Play 5th Order Ambisonic Sound through JACK
 
 You have several options of how to set this up.
