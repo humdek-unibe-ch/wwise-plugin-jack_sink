@@ -39,6 +39,8 @@ This plugin was only tested with version `2021.1.10`, hence, this is the recomme
 ### Manually Install Precompiled Plugin Bundle to Wwise
 
 In order to install or update the JackSink plugin in Wwise extract all archives form a prebuilt bundle and copy the extracted folders into the Wwise installation folder.
+> :warning: WARNING  
+> Do **not** copy the file `bundle.json`. Only copy the extracted forlders `SDK` and `Authoring` into the root installation folder of the correct Wwise version.
 
 ### Manually Install Precompiled Plugin Bundle to Existing UnrealProject
 
