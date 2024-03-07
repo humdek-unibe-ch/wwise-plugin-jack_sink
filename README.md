@@ -36,11 +36,11 @@ Start the launcher and install a Wwise version.
 This plugin was only tested with version `2021.1.10`, hence, this is the recommended version to choose.
 **Make sure to enable macOS, Windows Visual Studio 2017, 2019, and 2022 as these are needed for UE4 integration.**
 
-### Manually Install Precompiled Bundle to Wwise
+### Manually Install Precompiled Plugin Bundle to Wwise
 
 In order to install or update the JackSink plugin in Wwise extract all archives form a prebuilt bundle and copy the extracted folders into the Wwise installation folder.
 
-### Manually Install Precompiled Bundle to Existing UnrealProject
+### Manually Install Precompiled Plugin Bundle to Existing UnrealProject
 
 In order to update the JackSink plugin in an Unreal project where Wwise was already integrated do the following:
 
