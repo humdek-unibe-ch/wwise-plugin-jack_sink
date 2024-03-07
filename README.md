@@ -167,14 +167,18 @@ To start off it might make sense to have a look at the tutorials provided by Aud
 
 To get you started here are a few steps to set up the Wwise project for the [Going From Silence to Sound](https://www.audiokinetic.com/en/library/2021.1.10_7883/?source=UE4&id=gs_silence_to_sound.html) tutorial:
 
-* Download a free audio sample (e.g. [this](https://file-examples.com/wp-content/uploads/2017/11/file_example_WAV_10MG.wav) sample)
-* Right-click on `Actor-Mixer Hierarchy -> Default Work Unit` and select `Import Audio Files...` and add the sample file
-* Name the new file `Ambient` (you can use a different name here)
-* Select the new file and in `General Settings` in `Loop` select `Infinite`
-* Right-click the new file and select `New Event -> Play` (use the suggested name)
-* Save the changes
+1. Download a free audio sample (e.g. [this](https://file-examples.com/wp-content/uploads/2017/11/file_example_WAV_10MG.wav) sample)
+1. Right-click on `Actor-Mixer Hierarchy -> Default Work Unit` and select `Import Audio Files...` and add the sample file
+1. Name the new file `Ambient` (you can use a different name here)
+1. Select the new file and in `General Settings` in `Loop` select `Infinite`
+1. Right-click the new file and select `New Event -> Play` (use the suggested name)
+1. Save the changes
 
-This should make the event `Play_Ambient` available to select in the Unreal Engine.
+This should make the event `Play_Ambient` available to select in the Unreal Engine. To use the event do the following steps:
+
+1. Drag and drop events from the WAAPI Picker window to the content browser. This will create a blueprint event.
+1. Create an `AkAbientSound` actor in the Scene
+1. In the `AkAmbientSound` actor, select an audio event that was created in step 1
 
 ## JackSink Wwise Plugin Development Notes
 
